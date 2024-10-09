@@ -4,11 +4,11 @@ The Bopmatic Service Console allows customers to monitor their Bopmatic projects
 
 ## Building
 
-make
+`npm run build`
 
-## Installing
+## Running Dev Server
 
-TBD
+`npm start`
 
 ## Contributing
 Pull requests are welcome at https://github.com/bopmatic/console

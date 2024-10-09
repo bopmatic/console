@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* NOTE: This is how you add custom classes for Tailwind */
+@layer components {
+  .test-component {
+    @apply relative flex items-center justify-center h-12 w-12 mt-2 mb-2 mx-auto;
+  }
+}
+
+@layer base {
+  h2 {
+    @apply text-xl font-bold text-bopblack;
+  }
+}
+
+@layer base {
+  .bopmatic-table-column-header {
+    @apply bg-white text-bopgreytext border-b-2 border-b-red-900;
+  }
+}

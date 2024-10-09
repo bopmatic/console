@@ -1,0 +1,12 @@
+export enum ColumnStatus {
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+  WARNING = 'WARNING',
+}
+
+export enum ColoredIconColumnType {
+  PACKAGE_STATE = 'PACKAGE_STATE',
+  DEPLOYMENT_STATE = 'DEPLOYMENT_STATE',
+  PROJECT_HEALTH = 'PROJECT_HEALTH',
+  PROJECT_STATE = 'PROJECT_STATE',
+}
