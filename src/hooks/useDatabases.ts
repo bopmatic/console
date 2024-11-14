@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { databasesAtom, databasesLoadingAtom } from '../atoms';
 import { DatabaseDescription } from '../client';
@@ -23,7 +23,7 @@ export const useDatabases = (
         if (databaseNames && databaseNames.length) {
           for (let i = 0; i < databaseNames.length; i++) {
             apiCalls.push(
-              BopmaticClient.describeDatabase({
+              getBopmaticClient().describeDatabase({
                 databaseHeader: {
                   projEnvHeader: {
                     projId: projectId,

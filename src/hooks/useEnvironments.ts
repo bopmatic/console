@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { EnvironmentDescription } from '../client';
 import { useAtom, useSetAtom } from 'jotai/index';
 import { environmentsAtom, environmentsLoadingAtom } from '../atoms';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 
 export const useEnvironments = () => {
   const [environmentsData] = useAtom(environmentsAtom); // Use the atom to read and update data
@@ -14,13 +14,13 @@ export const useEnvironments = () => {
     const fetchData = async () => {
       const envs: EnvironmentDescription[] = [];
       try {
-        const listEnvsResponse = await BopmaticClient.listEnvironments({});
+        const listEnvsResponse = await getBopmaticClient().listEnvironments({});
         const envIds = listEnvsResponse.data.ids;
         const apiCalls = [];
         if (envIds && envIds.length) {
           for (let i = 0; i < envIds.length; i++) {
             apiCalls.push(
-              BopmaticClient.describeEnvironment({
+              getBopmaticClient().describeEnvironment({
                 id: envIds[i],
               })
             );

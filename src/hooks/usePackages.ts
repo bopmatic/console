@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { packagesAtom, packagesLoadingAtom } from '../atoms';
 import { PackageDescription } from '../client';
@@ -23,7 +23,7 @@ export const usePackages = (projectId: string | undefined) => {
         if (packageItems && packageItems.length) {
           for (let i = 0; i < packageItems.length; i++) {
             apiCalls.push(
-              BopmaticClient.describePackage({
+              getBopmaticClient().describePackage({
                 packageId: packageItems[i].packageId,
               })
             );

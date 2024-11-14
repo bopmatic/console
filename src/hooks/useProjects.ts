@@ -1,7 +1,7 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { projectsAtom, projectsLoadingAtom } from '../atoms';
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { ProjectDescription } from '../client';
 
 export const useProjects = () => {
@@ -14,13 +14,13 @@ export const useProjects = () => {
     const fetchData = async () => {
       const projects: ProjectDescription[] = [];
       try {
-        const listProjectsResponse = await BopmaticClient.listProjects({});
+        const listProjectsResponse = await getBopmaticClient().listProjects({});
         const projectIds = listProjectsResponse.data.ids;
         const apiCalls = [];
         if (projectIds && projectIds.length) {
           for (let i = 0; i < projectIds.length; i++) {
             apiCalls.push(
-              BopmaticClient.describeProject({
+              getBopmaticClient().describeProject({
                 id: projectIds[i],
               })
             );

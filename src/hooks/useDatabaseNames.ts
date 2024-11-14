@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { ProjectDatabaseNames, projectDatabaseNamesAtom } from '../atoms';
 
@@ -17,7 +17,7 @@ export const useDatabaseNames = (
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const listDatabasesResponse = await BopmaticClient.listDatabases({
+        const listDatabasesResponse = await getBopmaticClient().listDatabases({
           header: {
             projId: projectId,
             envId: envId,

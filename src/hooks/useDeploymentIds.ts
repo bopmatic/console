@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { ProjectDeploymentIds, projectDeploymentIdsAtom } from '../atoms';
 
@@ -17,12 +17,13 @@ export const useDeploymentIds = (
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const listDeploymentsResponse = await BopmaticClient.listDeployments({
-          projEnvHeader: {
-            projId: projectId,
-            envId: envId,
-          },
-        });
+        const listDeploymentsResponse =
+          await getBopmaticClient().listDeployments({
+            projEnvHeader: {
+              projId: projectId,
+              envId: envId,
+            },
+          });
         const deploymentIds = listDeploymentsResponse.data.ids;
         let projectDeploymentIds: ProjectDeploymentIds;
         if (deploymentIds && deploymentIds.length) {

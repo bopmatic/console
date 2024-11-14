@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { datastoresAtom, datastoresLoadingAtom } from '../atoms';
 import { DatastoreDescription } from '../client';
@@ -25,7 +25,7 @@ export const useDatastores = (
         if (datastoreNames && datastoreNames.length) {
           for (let i = 0; i < datastoreNames.length; i++) {
             apiCalls.push(
-              BopmaticClient.describeDatastore({
+              getBopmaticClient().describeDatastore({
                 datastoreHeader: {
                   projEnvHeader: {
                     projId: projectId,

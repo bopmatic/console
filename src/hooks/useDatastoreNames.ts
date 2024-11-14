@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { ProjectDatastoreNames, projectDatastoreNamesAtom } from '../atoms';
 
@@ -17,12 +17,14 @@ export const useDatastoreNames = (
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const listDatastoresResponse = await BopmaticClient.listDatastores({
-          header: {
-            projId: projectId,
-            envId: envId,
-          },
-        });
+        const listDatastoresResponse = await getBopmaticClient().listDatastores(
+          {
+            header: {
+              projId: projectId,
+              envId: envId,
+            },
+          }
+        );
         const datastoreNames = listDatastoresResponse.data.datastoreNames;
         let projectDataStoreNames: ProjectDatastoreNames;
         if (datastoreNames && datastoreNames.length) {

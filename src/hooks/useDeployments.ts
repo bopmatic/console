@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { deploymentsAtom, deploymentsLoadingAtom } from '../atoms';
 import { DeploymentDescription } from '../client';
@@ -26,7 +26,7 @@ export const useDeployments = (
         if (deploymentIds && deploymentIds.length) {
           for (let i = 0; i < deploymentIds.length; i++) {
             apiCalls.push(
-              BopmaticClient.describeDeployment({
+              getBopmaticClient().describeDeployment({
                 id: deploymentIds[i],
               })
             );

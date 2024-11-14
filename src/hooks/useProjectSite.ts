@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { DescribeSiteRequest } from '../client';
 
 export const useProjectSite = (
@@ -18,7 +18,7 @@ export const useProjectSite = (
             envId: envId,
           },
         };
-        const getSiteReply = await BopmaticClient.describeSite(req);
+        const getSiteReply = await getBopmaticClient().describeSite(req);
         if (getSiteReply.data.siteEndpoint) {
           setSite(getSiteReply.data.siteEndpoint);
         } else {

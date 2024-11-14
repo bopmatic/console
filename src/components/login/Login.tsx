@@ -11,6 +11,7 @@ import { useAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import Header from '../header/Header';
 import BopmaticLink from '../link/BopmaticLink';
+import { updateBopmaticClientToken } from '../../client/client';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');

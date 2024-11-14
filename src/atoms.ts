@@ -15,6 +15,7 @@ import {
   REFRESH_TOKEN_KEY,
   USERNAME_KEY,
 } from './constants';
+import { updateBopmaticClientToken } from './client/client';
 
 export interface ProjectServiceNames {
   projectId: string | undefined;
@@ -104,6 +105,7 @@ export const accessTokenWithPersistenceAtom = atom(
   (get, set, newToken: string | null) => {
     set(accessTokenAtom, newToken);
     if (newToken) {
+      updateBopmaticClientToken(newToken);
       localStorage.setItem(ACCESS_TOKEN_KEY, newToken);
     } else {
       localStorage.removeItem(ACCESS_TOKEN_KEY);

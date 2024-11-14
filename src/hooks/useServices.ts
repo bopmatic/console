@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { ServiceDescription } from '../client';
 import { useAtom, useSetAtom } from 'jotai';
 import { servicesAtom, servicesLoadingAtom } from '../atoms';
@@ -25,7 +25,7 @@ export const useServices = (
         if (serviceNames && serviceNames.length) {
           for (let i = 0; i < serviceNames.length; i++) {
             apiCalls.push(
-              BopmaticClient.describeService({
+              getBopmaticClient().describeService({
                 svcHeader: {
                   projEnvHeader: {
                     projId: projectId,

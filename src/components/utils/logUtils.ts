@@ -1,7 +1,6 @@
 import { Dayjs } from 'dayjs';
 import { GetLogsEntry, GetLogsRequest } from '../../client';
-import BopmaticClient from '../../client/client';
-import type { RawAxiosRequestConfig } from 'axios';
+import { getBopmaticClient } from '../../client/client';
 
 export const getLogs = async (
   projectId: string,
@@ -29,7 +28,7 @@ export const getLogs = async (
     if (serviceName && serviceName !== 'allServices') {
       req.serviceName = serviceName;
     }
-    const getLogsReply = await BopmaticClient.getLogs(req);
+    const getLogsReply = await getBopmaticClient().getLogs(req);
     if (getLogsReply.data.entries) {
       logs = getLogsReply.data.entries;
     } // NOTE: Seems that the API does not provide the value if there are no logs

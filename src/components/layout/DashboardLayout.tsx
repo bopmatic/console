@@ -10,6 +10,7 @@ import {
 } from '../../atoms';
 import { isTokenValid } from '../utils/authUtils';
 import { refreshAuthToken } from '../../client/cognitoClient';
+import { updateBopmaticClientToken } from '../../client/client';
 
 const DashboardLayout: React.FC = () => {
   const [accessToken, setAccessToken] = useAtom(accessTokenWithPersistenceAtom);
@@ -22,11 +23,6 @@ const DashboardLayout: React.FC = () => {
     if (!isTokenValid(accessToken)) {
       // first, try and refresh the token
       if (refreshToken) {
-        // TODO: Remove this logging once we confirm with Mike if this is working on his end
-        console.log(
-          'Current access token is not valid... going to try and refresh token. refresh token is:',
-          refreshToken
-        );
         refreshAuthToken(refreshToken)
           .then((tokens) => {
             setAccessToken(tokens.accessToken);
@@ -47,6 +43,13 @@ const DashboardLayout: React.FC = () => {
       }
     }
   }, [accessToken, navigate, refreshToken, setAccessToken, setIdToken]);
+
+  // initialize client with token in case of persistence from local storage
+  useEffect(() => {
+    if (accessToken) {
+      updateBopmaticClientToken(accessToken);
+    }
+  }, [accessToken]);
 
   return (
     <div>

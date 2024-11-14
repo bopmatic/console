@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { ProjectPackageIds, projectPackageIdsAtom } from '../atoms';
 
@@ -14,7 +14,7 @@ export const usePackageItems = (projectId: string | undefined) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const listPackagesResponse = await BopmaticClient.listPackages({
+        const listPackagesResponse = await getBopmaticClient().listPackages({
           projId: projectId,
         });
         const packageItems = listPackagesResponse.data.items;

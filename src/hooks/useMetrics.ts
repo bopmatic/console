@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react';
-import BopmaticClient from '../client/client';
+import { getBopmaticClient } from '../client/client';
 import { GetMetricSamplesRequest, MetricsScope } from '../client';
 import parsePrometheusTextFormat from '../prometheusParserLocal';
-import {
-  convertToChartData,
-  formatDatastoreDataInMegaBytes,
-  MetricObject,
-} from './utils';
+import { convertToChartData, formatDatastoreDataInMegaBytes } from './utils';
 import { ChartData } from 'chart.js';
 
 export const useMetrics = (
@@ -53,7 +49,7 @@ export const useMetrics = (
         if (metricNames && metricNames.length) {
           req.metricNames = metricNames;
         }
-        const getMetricsReply = await BopmaticClient.getMetricSamples(req);
+        const getMetricsReply = await getBopmaticClient().getMetricSamples(req);
         // console.log('getMetricsReply:', getMetricsReply);
         // check for errors
         // TODO: Make this generic and easier to do with client, maybe bake this into client
