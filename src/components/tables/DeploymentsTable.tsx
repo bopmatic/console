@@ -2,10 +2,20 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ColoredIconCell from './ColoredIconCell';
-import { ColoredIconColumnType } from './utils';
+import {
+  ColoredIconColumnType,
+  formatCompletionTime,
+  parseDeployTypeOrInitiator,
+} from './utils';
 import BopmaticLink from '../link/BopmaticLink';
 import { DeploymentDescription } from '../../client';
 import { useDeployments } from '../../hooks/useDeployments';
+import { useAtom } from 'jotai';
+import { deploymentsLoadingAtom } from '../../atoms';
+import BopmaticTableContainer from './BopmaticTableContainer';
+import { useEnvironmentName } from '../../hooks/useEnvironmentName';
+import CircularProgress from '@mui/material/CircularProgress';
+import EmptyTable from './EmptyTable';
 
 let rows: DeploymentDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -31,7 +41,9 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     renderCell: (params) => {
       return (
-        <BopmaticLink to={`/packages/${params.value}`}>
+        <BopmaticLink
+          to={`/projects/${params.row.header?.projId}/packages/${params.value}`}
+        >
           {params.value}
         </BopmaticLink>
       );
@@ -66,7 +78,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.header?.initiator) {
         return null;
       }
-      return row.header?.initiator;
+      return parseDeployTypeOrInitiator(row.header?.initiator);
     },
   },
   {
@@ -78,7 +90,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.header?.type) {
         return null;
       }
-      return row.header?.type;
+      return parseDeployTypeOrInitiator(row.header?.type);
     },
   },
   {
@@ -102,10 +114,12 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
     valueGetter: (value, row) => {
-      if (!row.endTime) {
+      if (!row.createTime || !row.endTime) {
         return null;
       }
-      return row.endTime; // TODO Format DATE object
+      return formatCompletionTime(
+        parseInt(row.endTime) - parseInt(row.createTime)
+      );
     },
   },
 ];
@@ -127,34 +141,48 @@ const DeploymentsTable: React.FC<DeploymentsTableProps> = ({
   envId,
 }) => {
   const deployments = useDeployments(projId, envId);
+  const [deploymentLoadingData] = useAtom(deploymentsLoadingAtom);
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={deployments ?? []}
-        columns={columns}
-        getRowId={getRowId}
-        loading={!deployments}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+    <BopmaticTableContainer
+      tableResource="Deployments"
+      includeNumResources={true}
+      numResources={deployments?.length}
+      subtitle="Note: Use the Bopmatic CLI to manage your deployments"
+    >
+      {deploymentLoadingData ? (
+        <div className="flex justify-center">
+          <CircularProgress />
+        </div>
+      ) : !deployments ? (
+        <EmptyTable resourceName="deployments" />
+      ) : (
+        <DataGrid
+          rows={deployments ?? []}
+          columns={columns}
+          getRowId={getRowId}
+          loading={deploymentLoadingData}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-          sorting: {
-            sortModel: [{ field: 'id', sort: 'asc' }],
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-        sx={{
-          border: 'none',
-          '.MuiDataGrid-footerContainer': { 'border-top': 'none' },
-          '& .MuiDataGrid-columnHeaders': {
-            borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
-          },
-        }}
-      />
-    </Box>
+            sorting: {
+              sortModel: [{ field: 'id', sort: 'asc' }],
+            },
+          }}
+          pageSizeOptions={[5]}
+          disableRowSelectionOnClick
+          sx={{
+            border: 'none',
+            '.MuiDataGrid-footerContainer': { borderTop: 'none' },
+            '& .MuiDataGrid-columnHeaders': {
+              borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
+            },
+          }}
+        />
+      )}
+    </BopmaticTableContainer>
   );
 };
 

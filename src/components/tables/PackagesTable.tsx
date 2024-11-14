@@ -6,6 +6,12 @@ import { ColoredIconColumnType } from './utils';
 import BopmaticLink from '../link/BopmaticLink';
 import { PackageDescription } from '../../client';
 import { usePackages } from '../../hooks/usePackages';
+import { useAtom } from 'jotai';
+import { packagesLoadingAtom } from '../../atoms';
+import BopmaticTableContainer from './BopmaticTableContainer';
+import { formatBytes } from '../utils/byteUtils';
+import CircularProgress from '@mui/material/CircularProgress';
+import EmptyTable from './EmptyTable';
 
 let rows: PackageDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -16,7 +22,9 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     renderCell: (params) => {
       return (
-        <BopmaticLink to={`/packages/${params.value}`}>
+        <BopmaticLink
+          to={`/projects/${params.row.projId}/packages/${params.value}`}
+        >
           {params.value}
         </BopmaticLink>
       );
@@ -47,6 +55,12 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Package Size',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    valueGetter: (value) => {
+      if (!value) {
+        return null;
+      }
+      return formatBytes(value);
+    },
   },
   {
     field: 'uploadTime',
@@ -76,34 +90,49 @@ type PackagesTableProps = {
 
 const PackagesTable: React.FC<PackagesTableProps> = ({ projId }) => {
   const packages = usePackages(projId);
+  const [packagesLoadingData] = useAtom(packagesLoadingAtom);
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={packages ?? []}
-        columns={columns}
-        loading={!packages}
-        getRowId={getRowId}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+    <BopmaticTableContainer
+      tableResource="Packages [all environments]"
+      includeNumResources={true}
+      numResources={packages?.length}
+      subtitle="Note: Use the Bopmatic CLI to manage your packages"
+      subtitle2="Packages exist across all environments"
+    >
+      {packagesLoadingData ? (
+        <div className="flex justify-center">
+          <CircularProgress />
+        </div>
+      ) : !packages ? (
+        <EmptyTable resourceName="packages" />
+      ) : (
+        <DataGrid
+          rows={packages ?? []}
+          columns={columns}
+          loading={packagesLoadingData}
+          getRowId={getRowId}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-          sorting: {
-            sortModel: [{ field: 'id', sort: 'asc' }],
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-        sx={{
-          border: 'none',
-          '.MuiDataGrid-footerContainer': { 'border-top': 'none' },
-          '& .MuiDataGrid-columnHeaders': {
-            borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
-          },
-        }}
-      />
-    </Box>
+            sorting: {
+              sortModel: [{ field: 'id', sort: 'asc' }],
+            },
+          }}
+          pageSizeOptions={[5]}
+          disableRowSelectionOnClick
+          sx={{
+            border: 'none',
+            '.MuiDataGrid-footerContainer': { borderTop: 'none' },
+            '& .MuiDataGrid-columnHeaders': {
+              borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
+            },
+          }}
+        />
+      )}
+    </BopmaticTableContainer>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   Collapse,
@@ -24,6 +24,7 @@ import { useLocation } from 'react-router-dom';
 import CustomListItemButton from './CustomListItemButton';
 import { useProjects } from '../../hooks/useProjects';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useEnvironments } from '../../hooks/useEnvironments';
 
 const drawerWidth = 240;
 
@@ -60,6 +61,7 @@ const LeftNav = () => {
   const [projectsOpen, setProjectsOpen] = React.useState(true);
   const location = useLocation();
   const projects = useProjects();
+  const environments = useEnvironments();
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -99,7 +101,7 @@ const LeftNav = () => {
               pathname="/projects"
               menuText="Projects"
               includeAmount={true}
-              amount={2}
+              amount={projects?.length}
               includeIndent={false}
               Icon={FolderOpenIcon}
             />
@@ -149,6 +151,7 @@ const LeftNav = () => {
                       includeIndent={true}
                       Icon={DescriptionIcon}
                       key={index}
+                      comparePathWithStartsWith={true}
                     />
                   );
                 })
@@ -167,7 +170,7 @@ const LeftNav = () => {
             pathname="/environments"
             menuText="Environments"
             includeAmount={true}
-            amount={1}
+            amount={environments?.length}
             includeIndent={false}
             Icon={DomainIcon}
           />

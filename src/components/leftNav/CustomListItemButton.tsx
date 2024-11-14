@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   ListItemButton,
   ListItemIcon,
@@ -21,6 +21,7 @@ type CustomListItemButtonProps = {
   includeIndent: boolean;
   Icon: React.ComponentType<SvgIconProps>;
   amount?: number;
+  comparePathWithStartsWith?: boolean;
 };
 
 const CustomListItemButton: React.FC<CustomListItemButtonProps> = ({
@@ -30,9 +31,19 @@ const CustomListItemButton: React.FC<CustomListItemButtonProps> = ({
   amount,
   includeIndent,
   Icon,
+  comparePathWithStartsWith,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  // By default, we just compare that current URL/pathname matches the pathname we expect from "pathname" property of this component.
+  // However, for sub-resources under the project, i.e. service details, we want to still highlight the project in the leftnav when viewing
+  // the sub components in the console.
+  const isPathnameMatchingLocation = useCallback(() => {
+    if (comparePathWithStartsWith) {
+      return location.pathname.startsWith(pathname);
+    }
+    return location.pathname === pathname;
+  }, [comparePathWithStartsWith, location.pathname, pathname]);
 
   return (
     <ListItemButton
@@ -43,7 +54,7 @@ const CustomListItemButton: React.FC<CustomListItemButtonProps> = ({
         ...(includeIndent && {
           pl: 4,
         }),
-        ...(location.pathname === pathname && {
+        ...(isPathnameMatchingLocation() && {
           backgroundColor: 'primary.main',
           '&:hover': {
             backgroundColor: 'primary.main',
@@ -53,7 +64,7 @@ const CustomListItemButton: React.FC<CustomListItemButtonProps> = ({
     >
       <ListItemIcon sx={listIconStyle}>
         <span
-          className={`${location.pathname === pathname ? 'text-bopblack' : 'text-bopgrey'}`}
+          className={`${isPathnameMatchingLocation() ? 'text-bopblack' : 'text-bopgrey'}`}
         >
           <Icon />
         </span>
@@ -61,7 +72,7 @@ const CustomListItemButton: React.FC<CustomListItemButtonProps> = ({
       <ListItemText
         primary={menuText}
         sx={
-          location.pathname === pathname
+          isPathnameMatchingLocation()
             ? {
                 color: theme.palette.text.primary,
               }

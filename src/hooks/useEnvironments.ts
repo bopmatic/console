@@ -41,7 +41,7 @@ export const useEnvironments = () => {
       }
     };
 
-    if (!environmentsData && !environmentsLoading) {
+    if (!environmentsData) {
       // Only fetch if the data isn't already loaded
       setEnvironmentsLoading(true);
       fetchData();

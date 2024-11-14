@@ -21,6 +21,11 @@ sdk:
 
 bopapi: openapi-generator-cli.jar sdk/golang/pb/sr.bopmatic.json
 	$(OPENAPIGENJS) -o bopapi -i sdk/golang/pb/sr.bopmatic.json
+	cp ./bopapi/api.ts ./src/client/
+	cp ./bopapi/base.ts ./src/client/
+	cp ./bopapi/common.ts ./src/client/
+	cp ./bopapi/configuration.ts ./src/client/
+	cp ./bopapi/index.ts ./src/client/
 
 .PHONY: clean
 clean:

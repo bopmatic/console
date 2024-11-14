@@ -1,14 +1,18 @@
 import { useEffect } from 'react';
 import BopmaticClient from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
-import { serviceNamesAtom } from '../atoms';
+import { ProjectServiceNames, projectServiceNamesAtom } from '../atoms';
 
 export const useServiceNames = (
   projectId: string | undefined,
   envId: string | undefined
-) => {
-  const [serviceNamesData] = useAtom(serviceNamesAtom); // Use the atom to read and update data
-  const setServiceNamesData = useSetAtom(serviceNamesAtom); // Another way to set data
+): Array<string> | undefined => {
+  const [projectServiceNamesData] = useAtom(projectServiceNamesAtom); // Use the atom to read and update data
+  // if serviceNamesDataFilteredByProject it means we haven't yet called listServices for that projectId
+  const serviceNamesDataFilteredByProject = projectServiceNamesData?.filter(
+    (p) => p.projectId === projectId
+  );
+  const setProjectServiceNamesData = useSetAtom(projectServiceNamesAtom); // Another way to set data
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,13 +24,25 @@ export const useServiceNames = (
           },
         });
         const serviceNames = listServicesResponse.data.serviceNames;
+        let projectServiceNames: ProjectServiceNames;
         if (serviceNames && serviceNames.length) {
-          console.log('setting serviceNames atom:', serviceNames);
-          setServiceNamesData(serviceNames);
+          projectServiceNames = {
+            projectId: projectId,
+            serviceNames: serviceNames,
+          };
         } else {
-          // we got a response but no data, implying its empty
-          setServiceNamesData([]);
+          // We still want to create a ProjectServiceNames wrapper so it indicates to our system
+          // that we already made this API call for this projectId but this project has no services
+          projectServiceNames = {
+            projectId: projectId,
+            serviceNames: [],
+          };
         }
+        setProjectServiceNamesData(
+          !projectServiceNamesData
+            ? [projectServiceNames]
+            : [...projectServiceNamesData, projectServiceNames]
+        );
       } catch (error) {
         console.error('Failed to fetch data', error);
       }
@@ -34,12 +50,22 @@ export const useServiceNames = (
 
     // TODO: This isn't working; its calling ListProjects twice because of LeftNav and ProjectsTable using the hook; figure out why
     // if (!projectsData && !projectsLoadingData) {
-    if (!serviceNamesData && projectId && envId) {
+    if (!serviceNamesDataFilteredByProject?.length && projectId && envId) {
       // Only fetch if the data isn't already loaded
       // setProjectLoadingAtom(true);
       fetchData();
     }
-  }, [envId, projectId, serviceNamesData, setServiceNamesData]); // Re-run if `setAtomData` changes or if `apiData` is null
+  }, [
+    envId,
+    projectId,
+    projectServiceNamesData,
+    serviceNamesDataFilteredByProject,
+    setProjectServiceNamesData,
+  ]); // Re-run if `setAtomData` changes or if `apiData` is null
 
-  return serviceNamesData;
+  // Undefined means we haven't yet made the ListServices API call yet for this projectId
+  return serviceNamesDataFilteredByProject &&
+    serviceNamesDataFilteredByProject.length
+    ? serviceNamesDataFilteredByProject[0].serviceNames
+    : undefined;
 };

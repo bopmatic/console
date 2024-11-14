@@ -1,14 +1,18 @@
 import { useEffect } from 'react';
 import BopmaticClient from '../client/client';
 import { useAtom, useSetAtom } from 'jotai';
-import { deploymentIdsAtom } from '../atoms';
+import { ProjectDeploymentIds, projectDeploymentIdsAtom } from '../atoms';
 
 export const useDeploymentIds = (
   projectId: string | undefined,
   envId: string | undefined
-) => {
-  const [deploymentIdsData] = useAtom(deploymentIdsAtom); // Use the atom to read and update data
-  const setDeploymentIdsData = useSetAtom(deploymentIdsAtom); // Another way to set data
+): Array<string> | undefined => {
+  const [projectDeploymentIdsData] = useAtom(projectDeploymentIdsAtom); // Use the atom to read and update data
+  // if deploymentIdDataFilteredByProject it means we haven't yet called listServices for that projectId
+  const deploymentIdDataFilteredByProject = projectDeploymentIdsData?.filter(
+    (p) => p.projectId === projectId
+  );
+  const setProjectDeploymentIdsData = useSetAtom(projectDeploymentIdsAtom); // Another way to set data
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,13 +24,24 @@ export const useDeploymentIds = (
           },
         });
         const deploymentIds = listDeploymentsResponse.data.ids;
+        let projectDeploymentIds: ProjectDeploymentIds;
         if (deploymentIds && deploymentIds.length) {
-          console.log('setting deploymentIds atom:', deploymentIds);
-          setDeploymentIdsData(deploymentIds);
+          projectDeploymentIds = {
+            projectId: projectId,
+            deploymentIds: deploymentIds,
+          };
         } else {
           // we got a response but no data, implying its empty
-          setDeploymentIdsData([]);
+          projectDeploymentIds = {
+            projectId: projectId,
+            deploymentIds: [],
+          };
         }
+        setProjectDeploymentIdsData(
+          !projectDeploymentIdsData
+            ? [projectDeploymentIds]
+            : [...projectDeploymentIdsData, projectDeploymentIds]
+        );
       } catch (error) {
         console.error('Failed to fetch data', error);
       }
@@ -34,12 +49,22 @@ export const useDeploymentIds = (
 
     // TODO: This isn't working; its calling ListProjects twice because of LeftNav and ProjectsTable using the hook; figure out why
     // if (!projectsData && !projectsLoadingData) {
-    if (!deploymentIdsData && projectId && envId) {
+    if (!deploymentIdDataFilteredByProject?.length && projectId && envId) {
       // Only fetch if the data isn't already loaded
       // setProjectLoadingAtom(true);
       fetchData();
     }
-  }, [envId, projectId, deploymentIdsData, setDeploymentIdsData]); // Re-run if `setAtomData` changes or if `apiData` is null
+  }, [
+    envId,
+    projectId,
+    projectDeploymentIdsData,
+    setProjectDeploymentIdsData,
+    deploymentIdDataFilteredByProject?.length,
+  ]); // Re-run if `setAtomData` changes or if `apiData` is null
 
-  return deploymentIdsData;
+  // Undefined means we haven't yet made the ListServices API call yet for this projectId
+  return deploymentIdDataFilteredByProject &&
+    deploymentIdDataFilteredByProject.length
+    ? deploymentIdDataFilteredByProject[0].deploymentIds
+    : undefined;
 };

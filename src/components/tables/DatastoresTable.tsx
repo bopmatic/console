@@ -1,8 +1,16 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import BopmaticLink from '../link/BopmaticLink';
+import { useDatastores } from '../../hooks/useDatastores';
+import { datastoresLoadingAtom } from '../../atoms';
+import { useAtom } from 'jotai';
+import { DatastoreDescription } from '../../client';
+import BopmaticTableContainer from './BopmaticTableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
+import EmptyTable from './EmptyTable';
+import { formatBytes } from '../utils/byteUtils';
 
+let rows: DatastoreDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
   {
     field: 'id',
@@ -11,10 +19,18 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     renderCell: (params) => {
       return (
-        <BopmaticLink to={`/projects/proj-123123123/datastores/myDatastore`}>
+        <BopmaticLink
+          to={`/projects/${params.row.datastoreHeader?.projEnvHeader?.projId}/datastores/${params.value}`}
+        >
           {params.value}
         </BopmaticLink>
       );
+    },
+    valueGetter: (value, row) => {
+      if (!row.datastoreHeader?.datastoreName) {
+        return null;
+      }
+      return row.datastoreHeader?.datastoreName;
     },
   },
   {
@@ -22,6 +38,14 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Capacity',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    valueGetter: (value, row) => {
+      if (!row.datastoreHeader?.datastoreName) {
+        return null;
+      }
+      return row.capacityConsumedInBytes
+        ? formatBytes(parseInt(row.capacityConsumedInBytes))
+        : '0 Bytes';
+    },
   },
   {
     field: 'numObjects',
@@ -29,59 +53,76 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'number',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    valueGetter: (value, row) => {
+      if (!row.datastoreHeader?.datastoreName) {
+        return null;
+      }
+      return row.numObjects ?? '0';
+    },
   },
 ];
 
-const rows = [
-  {
-    id: 'Datastore1',
-    numObjects: 10248,
-    capacity: '192 GB',
-  },
-  {
-    id: 'Datastore2',
-    numObjects: 2102,
-    capacity: '2 GB',
-  },
-  {
-    id: 'Datastore3',
-    numObjects: 3022491,
-    capacity: '1.1 TB',
-  },
-  {
-    id: 'Datastore4',
-    numObjects: 381923,
-    capacity: '97 GB',
-  },
-];
+type DatastoresTableProps = {
+  projId: string | undefined;
+  envId: string | undefined;
+  tableDescOverride?: string;
+};
 
-const DatastoresTable: React.FC = () => {
+const getRowId = (row: DatastoreDescription) => {
+  if (row.datastoreHeader?.datastoreName) {
+    return row.datastoreHeader?.datastoreName;
+  }
+  return '0';
+};
+
+const DatastoresTable: React.FC<DatastoresTableProps> = ({
+  projId,
+  envId,
+  tableDescOverride,
+}) => {
+  const datastores = useDatastores(projId, envId);
+  const [datastoresLoading] = useAtom(datastoresLoadingAtom);
+  const tableResource = tableDescOverride ? tableDescOverride : 'Datastores';
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+    <BopmaticTableContainer
+      tableResource={tableResource}
+      includeNumResources={true}
+      numResources={datastores?.length}
+    >
+      {datastoresLoading ? (
+        <div className="flex justify-center">
+          <CircularProgress />
+        </div>
+      ) : !datastores ? (
+        <EmptyTable resourceName="datastore" />
+      ) : (
+        <DataGrid
+          rows={datastores ?? []}
+          columns={columns}
+          loading={datastoresLoading}
+          getRowId={getRowId}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-          sorting: {
-            sortModel: [{ field: 'id', sort: 'asc' }],
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-        sx={{
-          border: 'none',
-          '.MuiDataGrid-footerContainer': { 'border-top': 'none' },
-          '& .MuiDataGrid-columnHeaders': {
-            borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
-          },
-        }}
-      />
-    </Box>
+            sorting: {
+              sortModel: [{ field: 'id', sort: 'asc' }],
+            },
+          }}
+          pageSizeOptions={[5]}
+          disableRowSelectionOnClick
+          sx={{
+            border: 'none',
+            '.MuiDataGrid-footerContainer': { borderTop: 'none' },
+            '& .MuiDataGrid-columnHeaders': {
+              borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
+            },
+          }}
+        />
+      )}
+    </BopmaticTableContainer>
   );
 };
 

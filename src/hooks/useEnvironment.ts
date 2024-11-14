@@ -11,7 +11,6 @@ export const useEnvironment = () => {
   const [envData, setEnvData] = useState<EnvironmentDescription>();
 
   useEffect(() => {
-    console.log('inside useProject hook with projectsData', envsData);
     if (envsData) {
       const env = envsData.filter((env) => env.header?.name === 'prod')[0];
       setEnvData(env);

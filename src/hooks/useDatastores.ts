@@ -10,7 +10,9 @@ export const useDatastores = (
   envId: string | undefined
 ) => {
   const [datastoresData] = useAtom(datastoresAtom); // Use the atom to read and update data
-  const [datastoresLoadingData] = useAtom(datastoresLoadingAtom);
+  const projectDatastoresData = projectId
+    ? datastoresData[projectId]
+    : undefined;
   const setDatastoresData = useSetAtom(datastoresAtom); // Another way to set data
   const setDatastoresLoadingData = useSetAtom(datastoresLoadingAtom);
   const datastoreNames = useDatastoreNames(projectId, envId);
@@ -19,14 +21,6 @@ export const useDatastores = (
     const fetchData = async () => {
       const datastores: DatastoreDescription[] = [];
       try {
-        // const listDatastoresResponse = await BopmaticClient.listDatastores({
-        //   header: {
-        //     projId: projectId,
-        //     envId: envId,
-        //   },
-        // });
-        // const datastoreNames = listDatastoresResponse.data.datastoreNames;
-        // console.log('Got datastores back: ', listDatastoresResponse.data);
         const apiCalls = [];
         if (datastoreNames && datastoreNames.length) {
           for (let i = 0; i < datastoreNames.length; i++) {
@@ -49,7 +43,8 @@ export const useDatastores = (
               datastores.push(projectDesc);
             }
           }
-          setDatastoresData(datastores);
+          datastoresData[projectId as string] = datastores;
+          setDatastoresData(datastoresData);
           setDatastoresLoadingData(false);
         }
       } catch (error) {
@@ -57,12 +52,10 @@ export const useDatastores = (
       }
     };
 
-    // TODO: This isn't working; its calling ListProjects twice because of LeftNav and ProjectsTable using the hook; figure out why
-    // if (!projectsData && !projectsLoadingData) {
     if (
       datastoreNames &&
-      !datastoresData &&
-      !datastoresLoadingData &&
+      datastoreNames.length &&
+      !projectDatastoresData?.length &&
       projectId &&
       envId
     ) {
@@ -70,16 +63,19 @@ export const useDatastores = (
       // setProjectLoadingAtom(true);
       fetchData();
       setDatastoresLoadingData(true);
+    } else if (datastoreNames && !datastoreNames.length) {
+      // this occurs when we fetched database names but its empty (no databases)
+      setDatastoresLoadingData(false);
     }
   }, [
     datastoreNames,
     datastoresData,
-    datastoresLoadingData,
     envId,
+    projectDatastoresData?.length,
     projectId,
     setDatastoresData,
     setDatastoresLoadingData,
   ]); // Re-run if `setAtomData` changes or if `apiData` is null
 
-  return datastoresData;
+  return projectDatastoresData;
 };

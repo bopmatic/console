@@ -3,8 +3,13 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import BopmaticLink from '../link/BopmaticLink';
 import { useDatabases } from '../../hooks/useDatabases';
-import { useEffect } from 'react';
 import { DatabaseDescription } from '../../client';
+import { useAtom } from 'jotai/index';
+import { databasesLoadingAtom } from '../../atoms';
+import BopmaticTableContainer from './BopmaticTableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useEffect } from 'react';
+import EmptyTable from './EmptyTable';
 
 let rows: DatabaseDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -36,10 +41,10 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
     valueGetter: (value, row) => {
-      if (!row.tableNames) {
+      if (!row.tables) {
         return null;
       }
-      return row.tableNames.length;
+      return row.tables.length;
     },
   },
 ];
@@ -54,41 +59,57 @@ const getRowId = (row: DatabaseDescription) => {
 type DatabasesTableProps = {
   projId: string | undefined;
   envId: string | undefined;
+  tableDescOverride?: string;
 };
 
-const DatabasesTable: React.FC<DatabasesTableProps> = ({ projId, envId }) => {
+const DatabasesTable: React.FC<DatabasesTableProps> = ({
+  projId,
+  envId,
+  tableDescOverride,
+}) => {
   const databases = useDatabases(projId, envId);
-  useEffect(() => {
-    console.log('databases is:', databases);
-  }, [databases]);
+  const [databasesLoadingData] = useAtom(databasesLoadingAtom);
+  const tableResource = tableDescOverride ? tableDescOverride : 'Databases';
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={databases ?? []}
-        columns={columns}
-        loading={!databases}
-        getRowId={getRowId}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+    <BopmaticTableContainer
+      tableResource={tableResource}
+      includeNumResources={true}
+      numResources={databases?.length}
+    >
+      {databasesLoadingData ? (
+        <div className="flex justify-center">
+          <CircularProgress />
+        </div>
+      ) : !databases ? (
+        <EmptyTable resourceName="databases" />
+      ) : (
+        <DataGrid
+          rows={databases ?? []}
+          columns={columns}
+          loading={databasesLoadingData}
+          getRowId={getRowId}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-          sorting: {
-            sortModel: [{ field: 'id', sort: 'asc' }],
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-        sx={{
-          border: 'none',
-          '.MuiDataGrid-footerContainer': { 'border-top': 'none' },
-          '& .MuiDataGrid-columnHeaders': {
-            borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
-          },
-        }}
-      />
-    </Box>
+            sorting: {
+              sortModel: [{ field: 'id', sort: 'asc' }],
+            },
+          }}
+          pageSizeOptions={[5]}
+          disableRowSelectionOnClick
+          sx={{
+            border: 'none',
+            '.MuiDataGrid-footerContainer': { borderTop: 'none' },
+            '& .MuiDataGrid-columnHeaders': {
+              borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
+            },
+          }}
+        />
+      )}
+    </BopmaticTableContainer>
   );
 };
 

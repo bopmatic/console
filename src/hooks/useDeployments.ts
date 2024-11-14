@@ -10,6 +10,9 @@ export const useDeployments = (
   envId: string | undefined
 ) => {
   const [deploymentsData] = useAtom(deploymentsAtom); // Use the atom to read and update data
+  const projectDeploymentsData = deploymentsData?.filter(
+    (d) => d.header?.projId === projectId
+  );
   const [deploymentsLoadingData] = useAtom(deploymentsLoadingAtom);
   const setDeploymentsData = useSetAtom(deploymentsAtom); // Another way to set data
   const setDeploymentsLoadingData = useSetAtom(deploymentsLoadingAtom);
@@ -19,15 +22,6 @@ export const useDeployments = (
     const fetchData = async () => {
       const deployments: DeploymentDescription[] = [];
       try {
-        // const listDeploymentsResponse = await BopmaticClient.listDeployments({
-        //   projEnvHeader: {
-        //     projId: projectId,
-        //     envId: envId,
-        //   },
-        // });
-        // // TODO: Figure out how to only fetch deployments through pagination if this number becomes super large
-        // const deploymentNames = listDeploymentsResponse.data.ids;
-        // console.log('Got deployments back: ', listDeploymentsResponse.data);
         const apiCalls = [];
         if (deploymentIds && deploymentIds.length) {
           for (let i = 0; i < deploymentIds.length; i++) {
@@ -38,7 +32,6 @@ export const useDeployments = (
             );
           }
           const allResponse = await Promise.all(apiCalls);
-          console.log('deployments allResponse is:', allResponse);
           for (const response of allResponse) {
             if (response.data.desc) {
               const deploymentDescription: DeploymentDescription =
@@ -46,8 +39,11 @@ export const useDeployments = (
               deployments.push(deploymentDescription);
             }
           }
-          console.log('setting deployment atomdata', deployments);
-          setDeploymentsData(deployments);
+          setDeploymentsData(
+            deploymentsData
+              ? [...deploymentsData, ...deployments]
+              : [...deployments]
+          );
           setDeploymentsLoadingData(false);
         }
       } catch (error) {
@@ -56,29 +52,26 @@ export const useDeployments = (
       }
     };
 
-    // TODO: This isn't working; its calling ListProjects twice because of LeftNav and ProjectsTable using the hook; figure out why
-    // if (!projectsData && !projectsLoadingData) {
     if (
       deploymentIds &&
-      !deploymentsData &&
-      !deploymentsLoadingData &&
+      deploymentIds.length &&
+      !projectDeploymentsData?.length &&
       projectId &&
       envId
     ) {
       // Only fetch if the data isn't already loaded
-      // setProjectLoadingAtom(true);
       fetchData();
       setDeploymentsLoadingData(true);
     }
   }, [
     deploymentIds,
     deploymentsData,
-    deploymentsLoadingData,
     envId,
+    projectDeploymentsData?.length,
     projectId,
     setDeploymentsData,
     setDeploymentsLoadingData,
   ]); // Re-run if `setAtomData` changes or if `apiData` is null
 
-  return deploymentsData;
+  return projectDeploymentsData;
 };

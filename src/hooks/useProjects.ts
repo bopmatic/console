@@ -42,7 +42,7 @@ export const useProjects = () => {
     };
 
     // TODO: This isn't working; its calling ListProjects twice because of LeftNav and ProjectsTable using the hook; figure out why
-    if (!projectsData && !projectsLoadingData) {
+    if (!projectsData) {
       // Only fetch if the data isn't already loaded
       setProjectLoadingAtom(true);
       fetchData();

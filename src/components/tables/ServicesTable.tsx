@@ -1,11 +1,15 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ColoredIconCell from './ColoredIconCell';
 import { ColoredIconColumnType } from './utils';
 import BopmaticLink from '../link/BopmaticLink';
 import { ServiceDescription } from '../../client';
 import { useServices } from '../../hooks/useServices';
+import { useAtom } from 'jotai';
+import { servicesLoadingAtom } from '../../atoms';
+import BopmaticTableContainer from './BopmaticTableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
+import EmptyTable from './EmptyTable';
 
 let rows: ServiceDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -39,7 +43,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       return (
         <ColoredIconCell
           value="Healthy"
-          type={ColoredIconColumnType.PROJECT_STATE}
+          type={ColoredIconColumnType.PROJECT_HEALTH}
         />
       );
     },
@@ -65,7 +69,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
   {
     field: 'rpcs',
     headerName: 'RPCs',
-    flex: 2,
+    flex: 1,
     type: 'number',
     headerClassName: 'bopmatic-table-column-header',
     valueGetter: (value, row) => {
@@ -87,38 +91,60 @@ const getRowId = (row: ServiceDescription) => {
 type ServicesTableProps = {
   projId: string | undefined;
   envId: string | undefined;
+  tableDescOverride?: string;
+  isSimple?: boolean;
 };
 
-const ServicesTable: React.FC<ServicesTableProps> = ({ projId, envId }) => {
+const ServicesTable: React.FC<ServicesTableProps> = ({
+  projId,
+  envId,
+  tableDescOverride,
+  isSimple,
+}) => {
   const services = useServices(projId, envId);
+  const [servicesLoadingData] = useAtom(servicesLoadingAtom);
+  const _columns = isSimple ? [columns[0], columns[4]] : columns; // only take ID/service name column in simple form
+  const tableResource = tableDescOverride ? tableDescOverride : 'Services';
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={services ?? []}
-        columns={columns}
-        loading={!services}
-        getRowId={getRowId}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+    <BopmaticTableContainer
+      tableResource={tableResource}
+      includeNumResources={true}
+      numResources={services?.length}
+    >
+      {servicesLoadingData ? (
+        <div className="flex justify-center">
+          <CircularProgress />
+        </div>
+      ) : !services ? (
+        <EmptyTable resourceName="services" />
+      ) : (
+        <DataGrid
+          rows={services ?? []}
+          columns={_columns}
+          loading={servicesLoadingData}
+          getRowId={getRowId}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-          sorting: {
-            sortModel: [{ field: 'id', sort: 'asc' }],
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-        sx={{
-          border: 'none',
-          '.MuiDataGrid-footerContainer': { 'border-top': 'none' },
-          '& .MuiDataGrid-columnHeaders': {
-            borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
-          },
-        }}
-      />
-    </Box>
+            sorting: {
+              sortModel: [{ field: 'id', sort: 'asc' }],
+            },
+          }}
+          pageSizeOptions={[5]}
+          disableRowSelectionOnClick
+          sx={{
+            border: 'none',
+            '.MuiDataGrid-footerContainer': { borderTop: 'none' },
+            '& .MuiDataGrid-columnHeaders': {
+              borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
+            },
+          }}
+        />
+      )}
+    </BopmaticTableContainer>
   );
 };
 

@@ -6,6 +6,11 @@ The Bopmatic Service Console allows customers to monitor their Bopmatic projects
 
 `npm run build`
 
+## Deploying static front-end application
+1. Run build step above
+2. Upload the entire build/ directory generated from step #1 above to an S3 bucket or other hosting space
+3. Ensure Bopmatic API includes CORS headers relative to the source of your website address (S3 bucket endpoint)
+
 ## Running Dev Server
 
 `npm start`

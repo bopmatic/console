@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BopmaticBreadcrumbs from '../components/breadcrumbs/BopmaticBreadcrumbs';
 import { ColoredIconColumnType } from '../components/tables/utils';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import PropertiesContainer, {
   KeyValuePair,
 } from '../components/propertiesContainer/PropertiesContainer';
 import { Tab, Tabs } from '@mui/material';
 import BopmaticTabPanel from '../components/tabs/BopmaticTabPanel';
-import BopmaticTableContainer from '../components/tables/BopmaticTableContainer';
 import ServicesTable from '../components/tables/ServicesTable';
 import DatabasesTable from '../components/tables/DatabasesTable';
 import DatastoresTable from '../components/tables/DatastoresTable';
@@ -21,6 +19,9 @@ import { useDatabaseNames } from '../hooks/useDatabaseNames';
 import { useDatastoreNames } from '../hooks/useDatastoreNames';
 import { useDeploymentIds } from '../hooks/useDeploymentIds';
 import { usePackageItems } from '../hooks/usePackageItems';
+import PageHeader from '../components/pageHeader/pageHeader';
+import { bopmaticDateFormat } from '../components/utils/dateUtils';
+import { useProjectSite } from '../hooks/useProjectSite';
 
 const ProjectDetails: React.FC = () => {
   const { id } = useParams();
@@ -34,6 +35,7 @@ const ProjectDetails: React.FC = () => {
   const datastoreNames = useDatastoreNames(id, environment?.id);
   const deploymentIds = useDeploymentIds(id, environment?.id);
   const packageItems = usePackageItems(id);
+  const [site, isSiteLoading] = useProjectSite(id, environment?.id);
 
   useEffect(() => {
     if (projectDetails) {
@@ -57,9 +59,9 @@ const ProjectDetails: React.FC = () => {
         {
           key: 'Creation date',
           value: projectDetails?.createTime
-            ? new Date(
-                parseInt(projectDetails?.createTime) * 1000
-              ).toDateString()
+            ? bopmaticDateFormat(
+                new Date(parseInt(projectDetails?.createTime) * 1000)
+              )
             : undefined,
         },
         {
@@ -70,10 +72,15 @@ const ProjectDetails: React.FC = () => {
           key: 'DNS Domain',
           value: projectDetails?.header?.dnsDomain,
         },
+        {
+          key: 'Project Site',
+          value: site,
+          linkTo: site,
+        },
       ];
       setProjectProperties(props);
     }
-  }, [projectDetails]);
+  }, [projectDetails, site]);
 
   const [value, setValue] = React.useState(0);
 
@@ -91,13 +98,7 @@ const ProjectDetails: React.FC = () => {
   return (
     <div>
       <BopmaticBreadcrumbs />
-      <div className="flex justify-between pt-4 pb-4">
-        <h1 className="text-2xl font-bold">ArensdorfHelloWorld</h1>
-        <div className="flex items-center">
-          <h1 className="text-2xl font-bold">Production</h1>
-          <KeyboardArrowDownIcon fontSize="large" />
-        </div>
-      </div>
+      <PageHeader title={projectDetails?.header?.name} />
       <div className="pb-6">
         <PropertiesContainer keyValuePairs={projectProperties} />
       </div>
@@ -179,44 +180,19 @@ const ProjectDetails: React.FC = () => {
           </Tabs>
         </div>
         <BopmaticTabPanel value={value} index={0}>
-          <BopmaticTableContainer
-            tableResource="Services"
-            numResources={serviceNames?.length}
-          >
-            <ServicesTable projId={id} envId={environment?.id} />
-          </BopmaticTableContainer>
+          <ServicesTable projId={id} envId={environment?.id} />
         </BopmaticTabPanel>
         <BopmaticTabPanel value={value} index={1}>
-          <BopmaticTableContainer
-            tableResource="Databases"
-            numResources={databaseNames?.length}
-          >
-            <DatabasesTable projId={id} envId={environment?.id} />
-          </BopmaticTableContainer>
+          <DatabasesTable projId={id} envId={environment?.id} />
         </BopmaticTabPanel>
         <BopmaticTabPanel value={value} index={2}>
-          <BopmaticTableContainer
-            tableResource="Datastores"
-            numResources={datastoreNames?.length}
-          >
-            <DatastoresTable />
-          </BopmaticTableContainer>
+          <DatastoresTable projId={id} envId={environment?.id} />
         </BopmaticTabPanel>
         <BopmaticTabPanel value={value} index={3}>
-          <BopmaticTableContainer
-            tableResource="Deployments"
-            numResources={deploymentIds?.length}
-          >
-            <DeploymentsTable projId={id} envId={environment?.id} />
-          </BopmaticTableContainer>
+          <DeploymentsTable projId={id} envId={environment?.id} />
         </BopmaticTabPanel>
         <BopmaticTabPanel value={value} index={4}>
-          <BopmaticTableContainer
-            tableResource="Packages [all environments]"
-            numResources={packageItems?.length}
-          >
-            <PackagesTable projId={id} />
-          </BopmaticTableContainer>
+          <PackagesTable projId={id} />
         </BopmaticTabPanel>
       </div>
     </div>

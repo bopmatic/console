@@ -7,6 +7,7 @@ import BopmaticLink from '../link/BopmaticLink';
 import { useProjects } from '../../hooks/useProjects';
 import { useEffect } from 'react';
 import { ProjectDescription } from '../../client';
+import BopmaticTableContainer from './BopmaticTableContainer';
 
 let rows: ProjectDescription[];
 
@@ -106,38 +107,40 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
 
 const ProjectsTable: React.FC = () => {
   const projectsData = useProjects();
-  useEffect(() => {
-    console.log('inside ProjectsTable, with projectsData:');
-    console.log(projectsData);
-  }, [projectsData]);
 
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={projectsData ?? []}
-        loading={!projectsData}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+    <BopmaticTableContainer
+      tableResource="Projects"
+      includeNumResources={true}
+      numResources={projectsData?.length}
+    >
+      <Box sx={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={projectsData ?? []}
+          loading={!projectsData}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-          sorting: {
-            sortModel: [{ field: 'name', sort: 'asc' }],
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-        sx={{
-          border: 'none',
-          '.MuiDataGrid-footerContainer': { 'border-top': 'none' },
-          '& .MuiDataGrid-columnHeaders': {
-            borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
-          },
-        }}
-      />
-    </Box>
+            sorting: {
+              sortModel: [{ field: 'name', sort: 'asc' }],
+            },
+          }}
+          pageSizeOptions={[5]}
+          disableRowSelectionOnClick
+          sx={{
+            border: 'none',
+            '.MuiDataGrid-footerContainer': { borderTop: 'none' },
+            '& .MuiDataGrid-columnHeaders': {
+              borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
+            },
+          }}
+        />
+      </Box>
+    </BopmaticTableContainer>
   );
 };
 

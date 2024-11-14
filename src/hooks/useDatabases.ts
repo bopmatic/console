@@ -8,9 +8,9 @@ import { useDatabaseNames } from './useDatabaseNames';
 export const useDatabases = (
   projectId: string | undefined,
   envId: string | undefined
-) => {
+): Array<DatabaseDescription> | undefined => {
   const [databasesData] = useAtom(databasesAtom); // Use the atom to read and update data
-  const [databasesLoadingData] = useAtom(databasesLoadingAtom);
+  const projectDatabaseData = projectId ? databasesData[projectId] : undefined;
   const setDatabasesData = useSetAtom(databasesAtom); // Another way to set data
   const setDatabasesLoadingData = useSetAtom(databasesLoadingAtom);
   const databaseNames = useDatabaseNames(projectId, envId);
@@ -19,13 +19,6 @@ export const useDatabases = (
     const fetchData = async () => {
       const databases: DatabaseDescription[] = [];
       try {
-        // const listDatabasesResponse = await BopmaticClient.listDatabases({
-        //   header: {
-        //     projId: projectId,
-        //     envId: envId,
-        //   },
-        // });
-        // const databaseNames = listDatabasesResponse.data.databaseNames;
         const apiCalls = [];
         if (databaseNames && databaseNames.length) {
           for (let i = 0; i < databaseNames.length; i++) {
@@ -48,8 +41,8 @@ export const useDatabases = (
               databases.push(projectDesc);
             }
           }
-          console.log('databases', databases);
-          setDatabasesData(databases);
+          databasesData[projectId as string] = databases;
+          setDatabasesData(databasesData);
           setDatabasesLoadingData(false);
         }
       } catch (error) {
@@ -58,29 +51,29 @@ export const useDatabases = (
       }
     };
 
-    // TODO: This isn't working; its calling ListProjects twice because of LeftNav and ProjectsTable using the hook; figure out why
-    // if (!projectsData && !projectsLoadingData) {
     if (
       databaseNames &&
-      !databasesData &&
-      !databasesLoadingData &&
+      databaseNames.length &&
+      !projectDatabaseData?.length &&
       projectId &&
       envId
     ) {
       // Only fetch if the data isn't already loaded
-      // setProjectLoadingAtom(true);
       fetchData();
       setDatabasesLoadingData(true);
+    } else if (databaseNames && !databaseNames.length) {
+      // this occurs when we fetched database names but its empty (no databases)
+      setDatabasesLoadingData(false);
     }
   }, [
     databaseNames,
     databasesData,
-    databasesLoadingData,
     envId,
+    projectDatabaseData?.length,
     projectId,
     setDatabasesData,
     setDatabasesLoadingData,
   ]); // Re-run if `setAtomData` changes or if `apiData` is null
 
-  return databasesData;
+  return projectDatabaseData;
 };
