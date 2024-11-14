@@ -2,6 +2,7 @@ OPENAPIGENJS=java -jar ./openapi-generator-cli.jar generate -g typescript-axios 
 
 build: openapi-generator-cli.jar node_modules sdk bopapi FORCE
 	mkdir -p build
+	npm run build
 
 .PHONY: deps
 deps: FORCE
