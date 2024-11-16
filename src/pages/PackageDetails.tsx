@@ -52,7 +52,7 @@ const PackageDetails: React.FC = () => {
       ];
       setPackageProperties(props);
     }
-  }, [packageDescription]);
+  }, []);
 
   return (
     <div>

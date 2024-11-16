@@ -1,16 +1,13 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import ColoredIconCell from './ColoredIconCell';
-import { ColoredIconColumnType } from './utils';
 import { useAtom } from 'jotai';
 import { databasesLoadingAtom } from '../../atoms';
-import { useEffect, useState } from 'react';
 import BopmaticLink from '../link/BopmaticLink';
 import { useDatabases } from '../../hooks/useDatabases';
 import BopmaticTableContainer from './BopmaticTableContainer';
-import { DatabaseDescription, DatabaseTableDescription } from '../../client';
+import { DatabaseTableDescription } from '../../client';
 import CircularProgress from '@mui/material/CircularProgress';
+import { formatBytes } from '../utils/byteUtils';
 
 let rows: DatabaseTableDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -54,7 +51,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.Size) {
         return null;
       }
-      return row.Size;
+      return formatBytes(parseInt(row.Size));
     },
   },
 ];

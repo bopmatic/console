@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { getBopmaticClient } from '../client/client';
 import { GetMetricSamplesRequest, MetricsScope } from '../client';
 import parsePrometheusTextFormat from '../prometheusParserLocal';
-import { convertToChartData, formatDatastoreDataInMegaBytes } from './utils';
+import {
+  convertToChartData,
+  formatDatastoreDataInMegaBytes,
+  populateHourlyData,
+} from './utils';
 import { ChartData } from 'chart.js';
 
 export const useMetrics = (
@@ -89,7 +93,7 @@ export const useMetrics = (
             // This is the Datastore capacity metric -- format the data from bytes to MB
             parsed = formatDatastoreDataInMegaBytes(parsed);
           }
-          const chartData = convertToChartData(
+          let chartData = convertToChartData(
             parsed,
             metricNames,
             metricNamePrefix,
@@ -97,7 +101,8 @@ export const useMetrics = (
             groupByMetricName,
             quantileVal
           );
-          // console.log(`Setting chartData for metric ${metricName}`, chartData);
+          // populate null data points to force ChartJs to respect the start and end time so data is relative to the window
+          chartData = populateHourlyData(startTime, endTime, chartData);
           setErrorText(undefined); // make sure to empty out any errors that may have existed before
           setMetrics(chartData);
         }

@@ -1,5 +1,6 @@
 import { atom } from 'jotai';
 import {
+  ApiKeyDescription,
   DatabaseDescription,
   DatastoreDescription,
   DeploymentDescription,
@@ -86,6 +87,9 @@ export const packagesLoadingAtom = atom<boolean>(true);
 export const projectPackageIdsAtom = atom<Array<ProjectPackageIds> | null>(
   null
 );
+
+export const apiKeysAtom = atom<ApiKeyDescription[] | null>(null);
+export const apiKeysLoadingAtom = atom<boolean>(true);
 
 // Initialize the token from localStorage (if it exists)
 const initialToken = localStorage.getItem(ACCESS_TOKEN_KEY) || null;

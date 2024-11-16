@@ -4,7 +4,7 @@ import Projects from '../pages/Projects';
 import ProjectDetails from '../pages/ProjectDetails';
 import Environments from '../pages/Environments';
 import DashboardLayout from '../components/layout/DashboardLayout';
-import AccessTokens from '../pages/AccessTokens';
+import ApiKeys from '../pages/ApiKeys';
 import Logs from '../pages/Logs';
 import Metrics from '../pages/Metrics';
 import ServiceDetails from '../pages/ServiceDetails';
@@ -17,6 +17,7 @@ import ForgotPassword from '../components/login/ForgotPassword';
 import RequestAccess from '../components/login/RequestAccess';
 import ChangePassword from '../components/login/ChangePassword';
 
+// TODO: Add readme to direct mike to a hello world: add new page/component/route
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
@@ -50,7 +51,7 @@ const AppRoutes: React.FC = () => {
           element={<PackageDetails />}
         />
         <Route path="environments" element={<Environments />} />
-        <Route path="access-keys" element={<AccessTokens />} />
+        <Route path="api-keys" element={<ApiKeys />} />
         <Route path="logs" element={<Logs />} />
         <Route path="metrics" element={<Metrics />} />
       </Route>

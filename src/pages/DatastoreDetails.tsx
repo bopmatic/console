@@ -10,23 +10,14 @@ import PropertiesContainer, {
   KeyValuePair,
 } from '../components/propertiesContainer/PropertiesContainer';
 import {
+  getChartJsOptionsForEnum,
   getMetricsEndWindowForEnum,
   getMetricsSamplingPeriodForEnum,
-  LINE_CHART_OPTIONS,
   TIME_TYPE,
 } from '../components/lineChart/utils';
 import { useMetrics } from '../hooks/useMetrics';
 import LineChart from '../components/lineChart/LineChart';
 import { formatBytes } from '../components/utils/byteUtils';
-import { _DeepPartialObject } from 'chart.js/dist/types/utils';
-import {
-  CoreChartOptions,
-  DatasetChartOptions,
-  ElementChartOptions,
-  LineControllerChartOptions,
-  PluginChartOptions,
-  ScaleChartOptions,
-} from 'chart.js';
 
 const DatastoreDetails: React.FC = () => {
   const { projectId, datastoreName } = useParams();
@@ -97,54 +88,6 @@ const DatastoreDetails: React.FC = () => {
     }
   }, [datastoreDescription]);
 
-  // TODO: Centralize this if we need to share this version with other charts
-  const options: _DeepPartialObject<
-    CoreChartOptions<'line'> &
-      ElementChartOptions<'line'> &
-      PluginChartOptions<'line'> &
-      DatasetChartOptions<'line'> &
-      ScaleChartOptions<'line'> &
-      LineControllerChartOptions
-  > = {
-    scales: {
-      x: {
-        type: 'timeseries',
-        time: {
-          unit: 'day',
-          displayFormats: {
-            day: 'MMM d', // Example: 'Nov 1' for days
-            hour: 'MMM d, h a', // Use lowercase 'a' for AM/PM in date-fns format
-          },
-        },
-        grid: {
-          display: false, // Disable vertical grid lines
-        },
-        ticks: {
-          source: 'auto', // Allow Chart.js to generate ticks automatically
-          autoSkip: true, // Optional: Skip some labels if there are too many
-          maxRotation: 0, // Keep labels horizontal
-          minRotation: 0,
-        },
-      },
-      y: {
-        beginAtZero: true,
-        ticks: {
-          maxTicksLimit: 5, // Limit the number of horizontal lines to 5
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        display: true,
-        position: 'bottom', // Move the legend to the bottom
-        align: 'start', // Align the legend to the left
-        labels: {
-          padding: 20, // Optional: Add padding between the labels and chart
-        },
-      },
-    },
-  };
-
   return (
     <div>
       <BopmaticBreadcrumbs />
@@ -170,6 +113,7 @@ const DatastoreDetails: React.FC = () => {
                 envId={environment?.id}
                 isSimple={true}
                 tableDescOverride="Services that access this datastore"
+                serviceNamesFilter={datastoreDescription?.serviceNames}
               />
             </div>
           </Grid>
@@ -189,7 +133,7 @@ const DatastoreDetails: React.FC = () => {
             chartName="Capacity"
             yAxisLabel="MB"
             data={capacityMetricsData}
-            options={options}
+            options={getChartJsOptionsForEnum(capacityTime)}
             currTime={capacityTime}
             setCurrTime={setCapacityTime}
             isLoading={capacityDataLoading}
@@ -201,7 +145,7 @@ const DatastoreDetails: React.FC = () => {
             chartName="Total Objects"
             yAxisLabel="num. objects"
             data={numObjectsMetricsData}
-            options={options}
+            options={getChartJsOptionsForEnum(numObjectsTime)}
             currTime={numObjectsTime}
             setCurrTime={setNumObjectsTime}
             isLoading={numObjectsDataLoading}

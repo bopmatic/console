@@ -16,6 +16,7 @@ import BopmaticTableContainer from './BopmaticTableContainer';
 import { useEnvironmentName } from '../../hooks/useEnvironmentName';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmptyTable from './EmptyTable';
+import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
 
 let rows: DeploymentDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -99,12 +100,17 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'dateTime',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
-    valueGetter: (value, row) => {
-      if (!row.endTime) {
-        return null;
+    valueGetter: (value) => {
+      if (!value) {
+        return value;
       }
-      // TODO: Fix this once mike returns timestamps for us here
-      return new Date(parseInt(row.endTime) * 1000);
+      return new Date(parseInt(value) * 1000);
+    },
+    valueFormatter: (value?: Date) => {
+      if (value instanceof Date) {
+        return bopmaticDateFormat_Grids(value);
+      }
+      return ''; // Fallback if value is not a valid Date
     },
   },
   {

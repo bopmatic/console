@@ -15,9 +15,9 @@ import DatastoresTable from '../components/tables/DatastoresTable';
 import LineChart from '../components/lineChart/LineChart';
 import { useMetrics } from '../hooks/useMetrics';
 import {
+  getChartJsOptionsForEnum,
   getMetricsEndWindowForEnum,
   getMetricsSamplingPeriodForEnum,
-  LINE_CHART_OPTIONS,
   TIME_TYPE,
 } from '../components/lineChart/utils';
 
@@ -62,56 +62,6 @@ const ServiceDetails: React.FC = () => {
     serviceName,
     '1.0'
   );
-  useEffect(() => {
-    console.log('p100MetricsData:', p100MetricsData);
-  }, [p100MetricsData]);
-  /*
-  TODO THURSDAY:
-  1. Create fake data with null values for the given time period as seen below
-  2. Create a "day" version of the options constant and use it when time selector is 7 days or 30 days
-   */
-  const date24HoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
-  const labels = ['2024-11-13T21:55:00.000Z', '2024-11-13T22:25:00.000Z'];
-  const data = ['9726.55', '5701.19'];
-
-  // Generate hourly timestamps and `null` data placeholders
-  const hourlyTimestamps = [];
-  const hourlyData = [];
-  for (let i = 0; i <= 24; i++) {
-    const date = new Date(date24HoursAgo.getTime() + i * 60 * 60 * 1000);
-    hourlyTimestamps.push(date.toISOString());
-    hourlyData.push(null); // Add `null` for each new hourly timestamp
-  }
-
-  // Merge labels and data arrays with hourly timestamps and `null` data, respectively
-  const combinedLabels = [...labels, ...hourlyTimestamps];
-  const combinedData = [...data, ...hourlyData];
-
-  // Sort combined arrays based on chronological order of labels
-  const sortedIndices = combinedLabels
-    .map((label, index) => ({ label, data: combinedData[index], index }))
-    .sort((a, b) => new Date(a.label).getTime() - new Date(b.label).getTime());
-
-  // Extract sorted labels and data
-  const sortedLabels = sortedIndices.map((item) => item.label);
-  const sortedData = sortedIndices.map((item) => item.data);
-  const TESTMETRICS = {
-    labels: sortedLabels,
-    datasets: [
-      {
-        data: sortedData,
-        label: 'GetOrder',
-        borderColor: '#FBA919',
-        backgroundColor: '#FBA919',
-      },
-      {
-        data: sortedData,
-        label: 'PlaceOrder',
-        borderColor: '#228B22',
-        backgroundColor: '#228B22',
-      },
-    ],
-  };
   const [p50MetricsData, p50DataLoading, p50ErrorText] = useMetrics(
     projectId,
     environment?.id,
@@ -203,6 +153,7 @@ const ServiceDetails: React.FC = () => {
                 projId={projectId}
                 envId={environment?.id}
                 tableDescOverride="Databases accessed by this service"
+                databaseNamesFilter={serviceDescription?.databaseNames}
               />
             </div>
           </Grid>
@@ -212,6 +163,7 @@ const ServiceDetails: React.FC = () => {
                 projId={projectId}
                 envId={environment?.id}
                 tableDescOverride="Datastores accessed by this service"
+                datastoreNamesFilter={serviceDescription?.datastoreNames}
               />
             </div>
           </Grid>
@@ -230,7 +182,7 @@ const ServiceDetails: React.FC = () => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             data={p100MetricsData}
-            options={LINE_CHART_OPTIONS}
+            options={getChartJsOptionsForEnum(p100Time)}
             currTime={p100Time}
             setCurrTime={setP100Time}
             isLoading={p100DataLoading}
@@ -242,7 +194,7 @@ const ServiceDetails: React.FC = () => {
             chartName="API Latency (p50)"
             yAxisLabel="milliseconds"
             data={p50MetricsData}
-            options={LINE_CHART_OPTIONS}
+            options={getChartJsOptionsForEnum(p50Time)}
             currTime={p50Time}
             setCurrTime={setP50Time}
             isLoading={p50DataLoading}
@@ -254,7 +206,7 @@ const ServiceDetails: React.FC = () => {
             chartName="Total API Requests"
             yAxisLabel="Num. requests"
             data={totalRequestsMetricsData}
-            options={LINE_CHART_OPTIONS}
+            options={getChartJsOptionsForEnum(numRequestsTime)}
             currTime={numRequestsTime}
             setCurrTime={setNumRequestsTime}
             isLoading={totalRequestsDataLoading}
@@ -266,7 +218,7 @@ const ServiceDetails: React.FC = () => {
             chartName="5xx Count"
             yAxisLabel="Num. 5xx"
             data={errorsMetricsData}
-            options={LINE_CHART_OPTIONS}
+            options={getChartJsOptionsForEnum(totalErrorsTime)}
             currTime={totalErrorsTime}
             setCurrTime={setTotalErrorsTime}
             isLoading={errorsDataLoading}

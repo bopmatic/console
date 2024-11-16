@@ -1,3 +1,5 @@
+import { Chart } from 'chart.js';
+
 type ServiceMetricsLabel = {
   environmentId: string;
   period: string;
@@ -37,6 +39,7 @@ type Dataset = {
   label: string;
   borderColor: string;
   backgroundColor: string;
+  spanGaps: boolean;
 };
 
 type DatasetMap = {
@@ -85,6 +88,12 @@ const getNextColor = () => {
  * @param datasetName
  */
 const getColorForDataset = (datasetName: string): string => {
+  // manual exception for the Database Details graphs so they have the same color
+  if (datasetName === 'ReadDurationMS') {
+    datasetName = 'Reads';
+  } else if (datasetName === 'WriteDurationMS') {
+    datasetName = 'Writes';
+  }
   if (DATASET_COLOR_MAP[datasetName]) {
     return DATASET_COLOR_MAP[datasetName];
   }
@@ -141,7 +150,6 @@ export const convertToChartData = (
             }
           }
         }
-        console.log('_labelsKey:', _labelsKey);
         if (quantiles) {
           // this metric has quantiles
           if (!quantileVal) {
@@ -195,8 +203,6 @@ export const convertToChartData = (
     }
   });
 
-  console.log('timestampMap:', timestampMap);
-
   // step 2 - go through each timestamp value (object key) and determine if there is a prop for each dataset name in the dataset unique array
   //              - if one is missing, populate with NULL
   timestampMap.forEach((curr) => {
@@ -233,6 +239,7 @@ export const convertToChartData = (
         label: datasetName,
         borderColor: color,
         backgroundColor: color,
+        spanGaps: true, // Connects lines between data points, even if there are nulls
       };
     }
     // now add the values by looping through sorted timestamps
@@ -288,4 +295,64 @@ export const formatDatastoreDataInMegaBytes = (
   });
 
   return metricDataArray;
+};
+
+export const populateHourlyData = (
+  startDate: Date,
+  endDate: Date,
+  chartData: ChartData
+): ChartData => {
+  // Round endDate to the next hour if it's not already at the top of an hour
+  const roundedEndDate = new Date(endDate);
+  if (
+    roundedEndDate.getMinutes() > 0 ||
+    roundedEndDate.getSeconds() > 0 ||
+    roundedEndDate.getMilliseconds() > 0
+  ) {
+    roundedEndDate.setHours(roundedEndDate.getHours() + 1);
+    roundedEndDate.setMinutes(0, 0, 0); // Set minutes, seconds, and milliseconds to zero
+  }
+
+  // Generate hourly timestamps between start and rounded end dates
+  const hourlyTimestamps: Date[] = [];
+  for (
+    let date = new Date(roundedEndDate);
+    date >= startDate;
+    date.setHours(date.getHours() - 1)
+  ) {
+    hourlyTimestamps.push(new Date(date));
+  }
+
+  // Merge existing labels with hourly timestamps and remove duplicates, then sort
+  const combinedLabels = [...chartData.labels, ...hourlyTimestamps];
+  const sortedLabels = Array.from(
+    new Set(combinedLabels.map((date) => date.getTime()))
+  ) // Remove duplicates by timestamp
+    .sort((a, b) => a - b) // Sort by time
+    .map((time) => new Date(time)); // Convert back to Date objects
+
+  // Populate each dataset's data array with `null` placeholders for new timestamps
+  chartData.datasets.forEach((dataset) => {
+    const combinedData: (number | null)[] = [];
+
+    // Create a map of original labels (Date objects) to their corresponding data values
+    const labelToDataMap = new Map(
+      chartData.labels.map((label, index) => [
+        label.getTime(),
+        dataset.data[index],
+      ])
+    );
+
+    // Populate combinedData based on sortedLabels
+    sortedLabels.forEach((label) => {
+      combinedData.push(labelToDataMap.get(label.getTime()) ?? null);
+    });
+
+    // Update dataset's data with the aligned combinedData
+    dataset.data = combinedData;
+  });
+
+  // Update the labels in the chartData object
+  chartData.labels = sortedLabels;
+  return chartData;
 };

@@ -8,6 +8,7 @@ import { useProjects } from '../../hooks/useProjects';
 import { useEffect } from 'react';
 import { ProjectDescription } from '../../client';
 import BopmaticTableContainer from './BopmaticTableContainer';
+import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
 
 let rows: ProjectDescription[];
 
@@ -75,8 +76,13 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!value) {
         return value;
       }
-      // Convert the decimal value to a percentage
       return new Date(parseInt(value) * 1000);
+    },
+    valueFormatter: (value?: Date) => {
+      if (value instanceof Date) {
+        return bopmaticDateFormat_Grids(value);
+      }
+      return ''; // Fallback if value is not a valid Date
     },
   },
   {

@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+
 const options: Intl.DateTimeFormatOptions = {
   year: 'numeric',
   month: 'short',
@@ -14,4 +16,8 @@ const options: Intl.DateTimeFormatOptions = {
  */
 export const bopmaticDateFormat = (d: Date) => {
   return d.toLocaleString('en-US', options);
+};
+
+export const bopmaticDateFormat_Grids = (d: Date) => {
+  return format(d, 'MMM d, yyyy, h:mm a');
 };

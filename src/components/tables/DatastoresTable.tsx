@@ -66,6 +66,7 @@ type DatastoresTableProps = {
   projId: string | undefined;
   envId: string | undefined;
   tableDescOverride?: string;
+  datastoreNamesFilter?: string[];
 };
 
 const getRowId = (row: DatastoreDescription) => {
@@ -79,8 +80,16 @@ const DatastoresTable: React.FC<DatastoresTableProps> = ({
   projId,
   envId,
   tableDescOverride,
+  datastoreNamesFilter,
 }) => {
   const datastores = useDatastores(projId, envId);
+  const datastoresFiltered = datastoreNamesFilter
+    ? datastores?.filter((ds) =>
+        datastoreNamesFilter.includes(
+          ds.datastoreHeader?.datastoreName as string
+        )
+      )
+    : [];
   const [datastoresLoading] = useAtom(datastoresLoadingAtom);
   const tableResource = tableDescOverride ? tableDescOverride : 'Datastores';
   return (
@@ -97,7 +106,7 @@ const DatastoresTable: React.FC<DatastoresTableProps> = ({
         <EmptyTable resourceName="datastore" />
       ) : (
         <DataGrid
-          rows={datastores ?? []}
+          rows={datastoreNamesFilter ? datastoresFiltered : datastores}
           columns={columns}
           loading={datastoresLoading}
           getRowId={getRowId}

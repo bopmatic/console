@@ -8,16 +8,24 @@ import DatabaseTablesTable from '../components/tables/DatabaseTablesTable';
 import ServicesTable from '../components/tables/ServicesTable';
 import LineChart from '../components/lineChart/LineChart';
 import {
+  getChartJsOptionsForEnum,
   getMetricsEndWindowForEnum,
   getMetricsSamplingPeriodForEnum,
-  LINE_CHART_OPTIONS,
   TIME_TYPE,
 } from '../components/lineChart/utils';
 import { useMetrics } from '../hooks/useMetrics';
+import { useDatabases } from '../hooks/useDatabases';
 
 const DatabaseDetails: React.FC = () => {
   const { projectId, databaseName } = useParams();
   const environment = useEnvironment();
+  const databases = useDatabases(projectId, environment?.id);
+  const databaseDescriptionFiltered = databases?.filter(
+    (d) => d.databaseHeader?.databaseName === databaseName
+  );
+  const databaseDescription = databaseDescriptionFiltered?.length
+    ? databaseDescriptionFiltered[0]
+    : undefined;
   const end = new Date();
   const [totalRequestsTime, setTotalRequestsTime] = React.useState<TIME_TYPE>(
     TIME_TYPE.LAST_24_HOURS
@@ -82,6 +90,7 @@ const DatabaseDetails: React.FC = () => {
                 envId={environment?.id}
                 isSimple={true}
                 tableDescOverride="Services that access this database"
+                serviceNamesFilter={databaseDescription?.serviceNames}
               />
             </div>
           </Grid>
@@ -98,7 +107,7 @@ const DatabaseDetails: React.FC = () => {
             chartName="Total requests"
             yAxisLabel="num. requests"
             data={totalRequestsMetricsData}
-            options={LINE_CHART_OPTIONS}
+            options={getChartJsOptionsForEnum(totalRequestsTime)}
             currTime={totalRequestsTime}
             setCurrTime={setTotalRequestsTime}
             isLoading={totalRequestsDataLoading}
@@ -110,7 +119,7 @@ const DatabaseDetails: React.FC = () => {
             chartName="Latency (p50)"
             yAxisLabel="milliseconds"
             data={latencyMetricsData}
-            options={LINE_CHART_OPTIONS}
+            options={getChartJsOptionsForEnum(latencyTime)}
             currTime={latencyTime}
             setCurrTime={setLatencyTime}
             isLoading={latencyDataLoading}

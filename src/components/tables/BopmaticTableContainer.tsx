@@ -1,6 +1,4 @@
 import React, { ReactNode } from 'react';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { IconButton } from '@mui/material';
 
 type BopmaticTableContainerProps = {
   tableResource: string;
@@ -9,6 +7,7 @@ type BopmaticTableContainerProps = {
   numResources?: number | undefined;
   subtitle?: string;
   subtitle2?: string;
+  actionButtonContainer?: ReactNode;
   children: ReactNode;
 };
 
@@ -19,6 +18,7 @@ const BopmaticTableContainer: React.FC<BopmaticTableContainerProps> = ({
   numResources,
   subtitle,
   subtitle2,
+  actionButtonContainer,
   children,
 }) => {
   return (
@@ -30,7 +30,7 @@ const BopmaticTableContainer: React.FC<BopmaticTableContainerProps> = ({
             <div>
               <div className="flex items-center">
                 <h2>{tableResource}</h2>
-                {includeNumResources && numResources && (
+                {includeNumResources && (
                   <div className="ml-2 text-bopgreytext">({numResources})</div>
                 )}
               </div>
@@ -46,6 +46,7 @@ const BopmaticTableContainer: React.FC<BopmaticTableContainerProps> = ({
             {/*    <RefreshIcon />*/}
             {/*  </IconButton>*/}
             {/*</div>*/}
+            {actionButtonContainer && <div>{actionButtonContainer}</div>}
           </div>
         </div>
         {children}

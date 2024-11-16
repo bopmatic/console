@@ -15,11 +15,7 @@ export enum TIME_TYPE {
   LAST_30_DAYS = 'LAST_30_DAYS',
 }
 
-const thirty = new Date(
-  new Date().setDate(new Date().getDate() - 30)
-).toISOString();
-const date24HoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-export const LINE_CHART_OPTIONS: _DeepPartialObject<
+const LINE_CHART_OPTIONS_HOURLY: _DeepPartialObject<
   CoreChartOptions<'line'> &
     ElementChartOptions<'line'> &
     PluginChartOptions<'line'> &
@@ -30,8 +26,6 @@ export const LINE_CHART_OPTIONS: _DeepPartialObject<
   scales: {
     x: {
       type: 'timeseries',
-      // min: date24HoursAgo,
-      // max: new Date().toISOString(),
       time: {
         unit: 'hour',
         minUnit: 'hour',
@@ -48,6 +42,56 @@ export const LINE_CHART_OPTIONS: _DeepPartialObject<
         autoSkip: true, // Optional: Skip some labels if there are too many
         maxRotation: 0, // Keep labels horizontal
         minRotation: 0,
+        maxTicksLimit: 10,
+      },
+    },
+    y: {
+      beginAtZero: true,
+      ticks: {
+        maxTicksLimit: 5, // Limit the number of horizontal lines to 5
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      display: true,
+      position: 'bottom', // Move the legend to the bottom
+      align: 'start', // Align the legend to the left
+      labels: {
+        padding: 20, // Optional: Add padding between the labels and chart
+      },
+    },
+  },
+};
+
+const LINE_CHART_OPTIONS_DAILY: _DeepPartialObject<
+  CoreChartOptions<'line'> &
+    ElementChartOptions<'line'> &
+    PluginChartOptions<'line'> &
+    DatasetChartOptions<'line'> &
+    ScaleChartOptions<'line'> &
+    LineControllerChartOptions
+> = {
+  scales: {
+    x: {
+      type: 'timeseries',
+      time: {
+        unit: 'day',
+        minUnit: 'day',
+        displayFormats: {
+          day: 'MMM d', // Example: 'Nov 1' for days
+          hour: 'HH:mm',
+        },
+      },
+      grid: {
+        display: false, // Disable vertical grid lines
+      },
+      ticks: {
+        source: 'auto', // Allow Chart.js to generate ticks automatically
+        autoSkip: true, // Optional: Skip some labels if there are too many
+        maxRotation: 0, // Keep labels horizontal
+        minRotation: 0,
+        maxTicksLimit: 7,
       },
     },
     y: {
@@ -133,5 +177,20 @@ export const getMetricsSamplingPeriodForEnum = (type: TIME_TYPE): number => {
       return 3600;
     default:
       return 300;
+  }
+};
+
+export const getChartJsOptionsForEnum = (type: TIME_TYPE) => {
+  switch (type) {
+    case TIME_TYPE.LAST_24_HOURS:
+      return LINE_CHART_OPTIONS_HOURLY;
+    case TIME_TYPE.LAST_48_HOURS:
+      return LINE_CHART_OPTIONS_HOURLY;
+    case TIME_TYPE.LAST_7_DAYS:
+      return LINE_CHART_OPTIONS_DAILY;
+    case TIME_TYPE.LAST_30_DAYS:
+      return LINE_CHART_OPTIONS_DAILY;
+    default:
+      return LINE_CHART_OPTIONS_HOURLY;
   }
 };

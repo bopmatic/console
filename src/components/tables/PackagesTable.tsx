@@ -12,6 +12,7 @@ import BopmaticTableContainer from './BopmaticTableContainer';
 import { formatBytes } from '../utils/byteUtils';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmptyTable from './EmptyTable';
+import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
 
 let rows: PackageDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -70,9 +71,15 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     valueGetter: (value) => {
       if (!value) {
-        return null;
+        return value;
       }
       return new Date(parseInt(value) * 1000);
+    },
+    valueFormatter: (value?: Date) => {
+      if (value instanceof Date) {
+        return bopmaticDateFormat_Grids(value);
+      }
+      return ''; // Fallback if value is not a valid Date
     },
   },
 ];

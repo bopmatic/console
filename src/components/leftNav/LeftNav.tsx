@@ -25,6 +25,7 @@ import CustomListItemButton from './CustomListItemButton';
 import { useProjects } from '../../hooks/useProjects';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEnvironments } from '../../hooks/useEnvironments';
+import { useApiKeys } from '../../hooks/useApiKeys';
 
 const drawerWidth = 240;
 
@@ -62,6 +63,7 @@ const LeftNav = () => {
   const location = useLocation();
   const projects = useProjects();
   const environments = useEnvironments();
+  const [apiKeys] = useApiKeys();
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -175,10 +177,10 @@ const LeftNav = () => {
             Icon={DomainIcon}
           />
           <CustomListItemButton
-            pathname="/access-keys"
-            menuText="Access tokens"
+            pathname="/api-keys"
+            menuText="API Keys"
             includeAmount={true}
-            amount={3}
+            amount={apiKeys?.length}
             includeIndent={false}
             Icon={KeyIcon}
           />

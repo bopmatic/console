@@ -14,7 +14,6 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
     valueGetter: (value, row) => {
-      console.log('row is: ', row);
       if (!row.header?.name) {
         return null;
       }

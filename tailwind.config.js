@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         boporange: '#FBA919',
         boporangedark: '#A06603',
+        boporangelight: '#FFEED1',
         bopgreybkg: '#F5F6FA',
         bopgreydisabled: '#A1A7C4',
         bopgrey: '#7E84A3',

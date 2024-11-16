@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import BopmaticLink from '../link/BopmaticLink';
 import { useDatabases } from '../../hooks/useDatabases';
@@ -8,7 +7,6 @@ import { useAtom } from 'jotai/index';
 import { databasesLoadingAtom } from '../../atoms';
 import BopmaticTableContainer from './BopmaticTableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useEffect } from 'react';
 import EmptyTable from './EmptyTable';
 
 let rows: DatabaseDescription[];
@@ -60,14 +58,21 @@ type DatabasesTableProps = {
   projId: string | undefined;
   envId: string | undefined;
   tableDescOverride?: string;
+  databaseNamesFilter?: string[];
 };
 
 const DatabasesTable: React.FC<DatabasesTableProps> = ({
   projId,
   envId,
   tableDescOverride,
+  databaseNamesFilter,
 }) => {
   const databases = useDatabases(projId, envId);
+  const databasesFiltered = databaseNamesFilter
+    ? databases?.filter((db) =>
+        databaseNamesFilter.includes(db.databaseHeader?.databaseName as string)
+      )
+    : [];
   const [databasesLoadingData] = useAtom(databasesLoadingAtom);
   const tableResource = tableDescOverride ? tableDescOverride : 'Databases';
   return (
@@ -84,7 +89,7 @@ const DatabasesTable: React.FC<DatabasesTableProps> = ({
         <EmptyTable resourceName="databases" />
       ) : (
         <DataGrid
-          rows={databases ?? []}
+          rows={databaseNamesFilter ? databasesFiltered : databases}
           columns={columns}
           loading={databasesLoadingData}
           getRowId={getRowId}

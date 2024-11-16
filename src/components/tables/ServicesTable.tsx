@@ -92,6 +92,7 @@ type ServicesTableProps = {
   projId: string | undefined;
   envId: string | undefined;
   tableDescOverride?: string;
+  serviceNamesFilter?: string[];
   isSimple?: boolean;
 };
 
@@ -99,9 +100,15 @@ const ServicesTable: React.FC<ServicesTableProps> = ({
   projId,
   envId,
   tableDescOverride,
+  serviceNamesFilter,
   isSimple,
 }) => {
   const services = useServices(projId, envId);
+  const servicesFiltered = serviceNamesFilter
+    ? services?.filter((s) =>
+        serviceNamesFilter.includes(s.svcHeader?.serviceName as string)
+      )
+    : [];
   const [servicesLoadingData] = useAtom(servicesLoadingAtom);
   const _columns = isSimple ? [columns[0], columns[4]] : columns; // only take ID/service name column in simple form
   const tableResource = tableDescOverride ? tableDescOverride : 'Services';
@@ -119,7 +126,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({
         <EmptyTable resourceName="services" />
       ) : (
         <DataGrid
-          rows={services ?? []}
+          rows={serviceNamesFilter ? servicesFiltered : services}
           columns={_columns}
           loading={servicesLoadingData}
           getRowId={getRowId}

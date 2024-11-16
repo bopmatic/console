@@ -91,10 +91,15 @@ const LineChart: React.FC<LineChartProps> = ({
         </>
       ) : (
         <div className="flex w-full justify-center mt-12 p-10">
-          <span className="text-bopgreytext font-bold">
-            There is no data for this time range. Try changing the time frame in
-            the dropdown above or use the custom metrics view.
-          </span>
+          <div>
+            <div className="text-bopgreytext font-bold text-center">
+              There is no data for this time range.
+            </div>
+            <div className="text-center pl-10 pr-10 text-sm text-bopgreytext">
+              Try changing the time frame in the dropdown above or use the
+              custom metrics view.
+            </div>
+          </div>
         </div>
       )}
     </div>
