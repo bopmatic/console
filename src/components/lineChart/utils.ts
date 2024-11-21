@@ -15,7 +15,7 @@ export enum TIME_TYPE {
   LAST_30_DAYS = 'LAST_30_DAYS',
 }
 
-const LINE_CHART_OPTIONS_HOURLY: _DeepPartialObject<
+export const LINE_CHART_OPTIONS_HOURLY: _DeepPartialObject<
   CoreChartOptions<'line'> &
     ElementChartOptions<'line'> &
     PluginChartOptions<'line'> &
@@ -64,7 +64,7 @@ const LINE_CHART_OPTIONS_HOURLY: _DeepPartialObject<
   },
 };
 
-const LINE_CHART_OPTIONS_DAILY: _DeepPartialObject<
+export const LINE_CHART_OPTIONS_DAILY: _DeepPartialObject<
   CoreChartOptions<'line'> &
     ElementChartOptions<'line'> &
     PluginChartOptions<'line'> &

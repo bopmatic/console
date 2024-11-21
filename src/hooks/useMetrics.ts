@@ -66,7 +66,7 @@ export const useMetrics = (
             )
           ) {
             throw new Error(
-              'Too many datapoints. Use a custom timeframe on the metrics page.'
+              'Too many datapoints. Try selecting a smaller time frame.'
             );
           }
           throw new Error('Something went wrong calling the API.');
@@ -101,6 +101,7 @@ export const useMetrics = (
             groupByMetricName,
             quantileVal
           );
+          console.log('chartData:', chartData);
           // populate null data points to force ChartJs to respect the start and end time so data is relative to the window
           chartData = populateHourlyData(startTime, endTime, chartData);
           setErrorText(undefined); // make sure to empty out any errors that may have existed before

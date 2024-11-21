@@ -29,12 +29,12 @@ export type PromParsedFormat = {
   type: string; // TODO: Make this enum
 };
 
-type ChartData = {
+export type ChartData = {
   labels: Date[];
   datasets: Dataset[];
 };
 
-type Dataset = {
+export type Dataset = {
   data: (number | null)[];
   label: string;
   borderColor: string;
@@ -87,7 +87,7 @@ const getNextColor = () => {
  * dataset already has one assigned to it.
  * @param datasetName
  */
-const getColorForDataset = (datasetName: string): string => {
+export const getColorForDataset = (datasetName: string): string => {
   // manual exception for the Database Details graphs so they have the same color
   if (datasetName === 'ReadDurationMS') {
     datasetName = 'Reads';
