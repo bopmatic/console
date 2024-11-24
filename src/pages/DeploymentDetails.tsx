@@ -94,6 +94,7 @@ const DeploymentDetails: React.FC = () => {
       ];
       setDeploymentProperties(props);
     }
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [deploymentDescription]);
   return (
     <div>

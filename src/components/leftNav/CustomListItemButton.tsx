@@ -22,6 +22,7 @@ type CustomListItemButtonProps = {
   Icon: React.ComponentType<SvgIconProps>;
   amount?: number;
   comparePathWithStartsWith?: boolean;
+  onClickCallback: () => void;
 };
 
 const CustomListItemButton: React.FC<CustomListItemButtonProps> = ({
@@ -32,6 +33,7 @@ const CustomListItemButton: React.FC<CustomListItemButtonProps> = ({
   includeIndent,
   Icon,
   comparePathWithStartsWith,
+  onClickCallback,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,6 +50,7 @@ const CustomListItemButton: React.FC<CustomListItemButtonProps> = ({
   return (
     <ListItemButton
       onClick={(event) => {
+        onClickCallback();
         navigate(pathname);
       }}
       sx={{

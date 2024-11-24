@@ -35,7 +35,7 @@ const ProjectDetails: React.FC = () => {
   const datastoreNames = useDatastoreNames(id, environment?.id);
   const deploymentIds = useDeploymentIds(id, environment?.id);
   const packageItems = usePackageItems(id);
-  const [site, isSiteLoading] = useProjectSite(id, environment?.id);
+  const [site] = useProjectSite(id, environment?.id);
 
   useEffect(() => {
     if (projectDetails) {

@@ -41,6 +41,7 @@ type LogsTableProps = {
 const generateUUID = (): string => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
+  // eslint-disable-next-line
   return (([1e7] as any) + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
     (
       c ^
@@ -49,7 +50,7 @@ const generateUUID = (): string => {
   );
 };
 
-const getRowId = (row: GetLogsEntry) => {
+const getRowId = () => {
   return generateUUID();
 };
 

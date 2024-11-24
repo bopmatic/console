@@ -13,7 +13,6 @@ export const useDeployments = (
   const projectDeploymentsData = deploymentsData?.filter(
     (d) => d.header?.projId === projectId
   );
-  const [deploymentsLoadingData] = useAtom(deploymentsLoadingAtom);
   const setDeploymentsData = useSetAtom(deploymentsAtom); // Another way to set data
   const setDeploymentsLoadingData = useSetAtom(deploymentsLoadingAtom);
   const deploymentIds = useDeploymentIds(projectId, envId);

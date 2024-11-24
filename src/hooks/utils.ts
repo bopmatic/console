@@ -1,5 +1,3 @@
-import { Chart } from 'chart.js';
-
 type ServiceMetricsLabel = {
   environmentId: string;
   period: string;

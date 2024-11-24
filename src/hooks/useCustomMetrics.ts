@@ -11,7 +11,6 @@ import {
 import parsePrometheusTextFormat from '../prometheusParserLocal';
 import getBopmaticClient from '../client/client';
 import { Dayjs } from 'dayjs';
-import { populateHourlyData } from './utils';
 
 export const useCustomMetrics = (
   startTime: Dayjs | null,
@@ -126,6 +125,7 @@ export const useCustomMetrics = (
           setIsLoading(false);
         });
     }
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [allSelectedMetrics, startTime, endTime]);
 
   return [metrics, isLoading, errorText];

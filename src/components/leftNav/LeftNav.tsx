@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   Collapse,
@@ -9,7 +9,7 @@ import {
   ListItemIcon,
 } from '@mui/material';
 import {
-  Close as CloseIcon,
+  ChevronLeft as ChevronLeftIcon,
   Menu as MenuIcon,
   FolderOpen as FolderOpenIcon,
   Domain as DomainIcon,
@@ -73,6 +73,39 @@ const LeftNav = () => {
     setProjectsOpen(!projectsOpen);
   };
 
+  const [isMobileView, setIsMobileView] = useState<boolean>(false); // Detect screen size
+
+  const checkMobileOnNavigate = () => {
+    if (isMobileView) {
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    // Media query for screen width below 768px (TailwindCSS's "md")
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+
+    const handleScreenResize = (event: MediaQueryListEvent) => {
+      setIsMobileView(event.matches);
+      if (event.matches) {
+        setOpen(false); // Close the menu in mobile view
+      }
+    };
+
+    // Initial check and add listener
+    setIsMobileView(mediaQuery.matches);
+    if (mediaQuery.matches) {
+      setOpen(false);
+    }
+
+    mediaQuery.addEventListener('change', handleScreenResize);
+
+    // Cleanup listener on component unmount
+    return () => {
+      mediaQuery.removeEventListener('change', handleScreenResize);
+    };
+  }, []);
+
   return (
     <DrawerStyled variant="permanent" open={open}>
       <div className="w-full shadow-inner">
@@ -80,7 +113,7 @@ const LeftNav = () => {
           <div className="flex w-full justify-between pl-6 items-center">
             <span className="text-xs text-bopgreytext"></span>
             <IconButton onClick={toggleDrawer}>
-              <CloseIcon />
+              <ChevronLeftIcon />
             </IconButton>
           </div>
         )}
@@ -106,6 +139,7 @@ const LeftNav = () => {
               amount={projects?.length}
               includeIndent={false}
               Icon={FolderOpenIcon}
+              onClickCallback={checkMobileOnNavigate}
             />
             <div
               className={`flex h-12 items-center ${location.pathname === '/projects' ? 'bg-boporange' : 'bg-bopgreybkg'}`}
@@ -154,6 +188,7 @@ const LeftNav = () => {
                       Icon={DescriptionIcon}
                       key={index}
                       comparePathWithStartsWith={true}
+                      onClickCallback={checkMobileOnNavigate}
                     />
                   );
                 })
@@ -175,6 +210,7 @@ const LeftNav = () => {
             amount={environments?.length}
             includeIndent={false}
             Icon={DomainIcon}
+            onClickCallback={checkMobileOnNavigate}
           />
           <CustomListItemButton
             pathname="/api-keys"
@@ -183,6 +219,7 @@ const LeftNav = () => {
             amount={apiKeys?.length}
             includeIndent={false}
             Icon={KeyIcon}
+            onClickCallback={checkMobileOnNavigate}
           />
           <CustomListItemButton
             pathname="/logs"
@@ -190,6 +227,7 @@ const LeftNav = () => {
             includeAmount={false}
             includeIndent={false}
             Icon={TroubleshootIcon}
+            onClickCallback={checkMobileOnNavigate}
           />
           <CustomListItemButton
             pathname="/metrics"
@@ -197,6 +235,7 @@ const LeftNav = () => {
             includeAmount={false}
             includeIndent={false}
             Icon={InsightsIcon}
+            onClickCallback={checkMobileOnNavigate}
           />
         </List>
       )}

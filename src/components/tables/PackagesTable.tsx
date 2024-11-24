@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ColoredIconCell from './ColoredIconCell';
 import { ColoredIconColumnType } from './utils';

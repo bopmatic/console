@@ -18,8 +18,6 @@ import LogsTable from '../components/tables/LogsTable';
 import Button from '@mui/material/Button';
 import { getLogs } from '../components/utils/logUtils';
 import { GetLogsEntry } from '../client';
-import { useAtom } from 'jotai/index';
-import { accessTokenWithPersistenceAtom } from '../atoms';
 
 const Logs: React.FC = () => {
   const [envId, setEnvId] = useState<string>('');
@@ -36,7 +34,6 @@ const Logs: React.FC = () => {
   const [isLoadingLogs, setIsLoadingLogs] = useState<boolean>(false);
   const [isLogsInitialized, setIsLogsInitialized] = useState<boolean>(false);
   const [logsError, setLogsError] = useState<string>();
-  const [accessToken] = useAtom(accessTokenWithPersistenceAtom);
 
   useEffect(() => {
     if (environments && environments.length) {

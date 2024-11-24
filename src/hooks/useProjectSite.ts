@@ -36,6 +36,7 @@ export const useProjectSite = (
       setIsLoading(true);
       fetchData();
     }
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [projectId, envId]); // ignore dependency warning
 
   return [site, isLoading];

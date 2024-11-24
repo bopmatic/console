@@ -51,6 +51,7 @@ export const useApiKeys = (): [ApiKeyDescription[] | null, boolean] => {
       .finally(() => {
         setIsLoading(false);
       });
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []); // only run one time at loading
   return [apiKeys, isLoading];
 };

@@ -5,7 +5,6 @@ import ColoredIconCell from './ColoredIconCell';
 import { ColoredIconColumnType } from './utils';
 import BopmaticLink from '../link/BopmaticLink';
 import { useProjects } from '../../hooks/useProjects';
-import { useEffect } from 'react';
 import { ProjectDescription } from '../../client';
 import BopmaticTableContainer from './BopmaticTableContainer';
 import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
@@ -57,7 +56,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Prod health',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
-    renderCell: (params) => {
+    renderCell: () => {
       return (
         <ColoredIconCell
           value="Healthy"

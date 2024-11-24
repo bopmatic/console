@@ -4,7 +4,7 @@ import {
   getLineChartOptions,
   ListMetricsEntryWrapper,
 } from '../utils/customMetricsUtils';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useCustomMetrics } from '../../hooks/useCustomMetrics';
 import CircularProgress from '@mui/material/CircularProgress';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';

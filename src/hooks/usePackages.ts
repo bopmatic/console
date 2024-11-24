@@ -10,7 +10,6 @@ export const usePackages = (projectId: string | undefined) => {
   const projectPackagesData = packagesData?.filter(
     (p) => p.projId === projectId
   );
-  const [packagesLoadingData] = useAtom(packagesLoadingAtom);
   const setPackagesData = useSetAtom(packagesAtom); // Another way to set data
   const setPackagesLoadingData = useSetAtom(packagesLoadingAtom);
   const packageItems = usePackageItems(projectId);

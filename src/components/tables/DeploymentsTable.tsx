@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ColoredIconCell from './ColoredIconCell';
 import {
@@ -13,7 +12,6 @@ import { useDeployments } from '../../hooks/useDeployments';
 import { useAtom } from 'jotai';
 import { deploymentsLoadingAtom } from '../../atoms';
 import BopmaticTableContainer from './BopmaticTableContainer';
-import { useEnvironmentName } from '../../hooks/useEnvironmentName';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmptyTable from './EmptyTable';
 import { bopmaticDateFormat_Grids } from '../utils/dateUtils';

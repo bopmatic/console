@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography } from '@mui/material';
 import { changePassword } from '../../client/cognitoClient';
-import { accessTokenWithPersistenceAtom } from '../../atoms';
-import { useAtom } from 'jotai';
-import { useNavigate } from 'react-router-dom';
 
 const ChangePassword: React.FC = () => {
   const [password, setPassword] = useState('');

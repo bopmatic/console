@@ -130,6 +130,7 @@ export const useMetrics = (
       setIsLoading(true);
       fetchData();
     }
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [metrics, projectId, envId, startTime]); // manually selecting which items we want to watch for here
 
   return [metrics, isLoading, errorText];

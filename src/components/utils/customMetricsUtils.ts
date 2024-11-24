@@ -38,23 +38,6 @@ export type MetricDataSet = {
   values: number[];
 };
 
-type PrometheusFormatInputData = {
-  name: string;
-  help: string;
-  type: string;
-  metrics: {
-    value: string;
-    labels: {
-      projectId: string;
-      environmentId: string;
-      service: string;
-      api: string;
-      period: string;
-    };
-    timestamp_ms: string;
-  }[];
-}[];
-
 const SERVICE_NODE: MetricsNavigationTreeElement = {
   cardContent: 'Services',
 };

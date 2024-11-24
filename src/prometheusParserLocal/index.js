@@ -1,4 +1,3 @@
-import { shallowEqualObjects } from 'shallow-equal';
 import InvalidLineError from './InvalidLineError';
 import parseSampleLine from './parse-sample-line';
 
