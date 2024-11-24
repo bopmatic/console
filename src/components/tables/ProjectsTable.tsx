@@ -17,6 +17,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Name',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.header?.name) {
         return null;
@@ -29,6 +30,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Project ID',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 100,
     renderCell: (params) => {
       return (
         <BopmaticLink to={`/projects/${params.id}`}>
@@ -42,6 +44,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Project state',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 100,
     renderCell: (params) => {
       return (
         <ColoredIconCell
@@ -56,13 +59,18 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Prod health',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
-    renderCell: () => {
-      return (
-        <ColoredIconCell
-          value="Healthy"
-          type={ColoredIconColumnType.PROJECT_HEALTH}
-        />
-      );
+    minWidth: 100,
+    renderCell: (params) => {
+      if (params.row.state !== 'ACTIVE') {
+        return '-';
+      } else {
+        return (
+          <ColoredIconCell
+            value="Healthy"
+            type={ColoredIconColumnType.PROJECT_HEALTH}
+          />
+        );
+      }
     },
   },
   {
@@ -71,6 +79,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'dateTime',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value) => {
       if (!value) {
         return value;
@@ -89,6 +98,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'DNS Prefix',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.header?.dnsPrefix) {
         return null;
@@ -101,6 +111,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'DNS Domain',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.header?.dnsDomain) {
         return null;

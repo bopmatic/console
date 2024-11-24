@@ -3,7 +3,6 @@ import React, { ReactNode } from 'react';
 type BopmaticTableContainerProps = {
   tableResource: string;
   includeNumResources: boolean;
-  // refreshCallback: () => void;
   numResources?: number | undefined;
   subtitle?: string;
   subtitle2?: string;
@@ -14,7 +13,6 @@ type BopmaticTableContainerProps = {
 const BopmaticTableContainer: React.FC<BopmaticTableContainerProps> = ({
   tableResource,
   includeNumResources,
-  // refreshCallback,
   numResources,
   subtitle,
   subtitle2,
@@ -24,9 +22,10 @@ const BopmaticTableContainer: React.FC<BopmaticTableContainerProps> = ({
   return (
     <div className="bg-white rounded border-bopgreyborder border">
       <div className="p-4">
-        {/*TABLE HEADER*/}
+        {/* TABLE HEADER */}
         <div className="pb-4">
-          <div className="flex justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:items-center md:justify-between gap-y-4">
+            {/* Left Section */}
             <div>
               <div className="flex items-center">
                 <h2>{tableResource}</h2>
@@ -41,14 +40,14 @@ const BopmaticTableContainer: React.FC<BopmaticTableContainerProps> = ({
                 <div className="text-bopgreytext text-sm">{subtitle2}</div>
               )}
             </div>
-            {/*<div className="border rounded border-gray-300">*/}
-            {/*  <IconButton aria-label="refresh" onClick={refreshCallback}>*/}
-            {/*    <RefreshIcon />*/}
-            {/*  </IconButton>*/}
-            {/*</div>*/}
-            {actionButtonContainer && <div>{actionButtonContainer}</div>}
+
+            {/* Right Section (Action Button Container) */}
+            {actionButtonContainer && (
+              <div className="md:text-right">{actionButtonContainer}</div>
+            )}
           </div>
         </div>
+
         {children}
       </div>
     </div>

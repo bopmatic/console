@@ -21,6 +21,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'API',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value, row) => {
       if (!row.endpointStr) {
         return null;
@@ -34,6 +35,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Endpoint health',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 190,
     renderCell: (params) => {
       return (
         <ColoredIconCell

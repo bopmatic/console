@@ -10,6 +10,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Timestamp (UTC)',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 200,
     valueGetter: (value, row) => {
       if (!row.timestamp) {
         return null;
@@ -22,6 +23,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Message',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 400,
     valueGetter: (value, row) => {
       if (!row.message) {
         return null;

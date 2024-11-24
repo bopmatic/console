@@ -22,6 +22,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Deployment ID',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     renderCell: (params) => {
       return (
         <BopmaticLink
@@ -37,6 +38,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Environment',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.header?.envId) {
         return null;
@@ -49,6 +51,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Deployment state',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 190,
     renderCell: (params) => {
       return (
         <ColoredIconCell
@@ -63,6 +66,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Initiator',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.header?.initiator) {
         return null;
@@ -75,6 +79,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Type',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.header?.type) {
         return null;
@@ -88,6 +93,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'dateTime',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value, row) => {
       if (!row.endTime) {
         return null;
@@ -102,6 +108,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'number',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.createTime || !row.endTime) {
         return null;

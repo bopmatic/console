@@ -21,18 +21,21 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Key ID',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
   },
   {
     field: 'name',
     headerName: 'Name',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
   },
   {
     field: 'description',
     headerName: 'Description',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
   },
   {
     field: 'createTime',
@@ -40,6 +43,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'dateTime',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value) => {
       if (!value) {
         return value;
@@ -59,6 +63,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'dateTime',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value) => {
       if (!value) {
         return value;

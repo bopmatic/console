@@ -17,6 +17,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Datastore name',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     renderCell: (params) => {
       return (
         <BopmaticLink
@@ -38,6 +39,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Capacity',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.datastoreHeader?.datastoreName) {
         return null;
@@ -53,6 +55,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'number',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       if (!row.datastoreHeader?.datastoreName) {
         return null;

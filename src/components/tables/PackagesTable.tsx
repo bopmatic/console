@@ -20,6 +20,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Package ID',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     renderCell: (params) => {
       return (
         <BopmaticLink
@@ -41,6 +42,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Package state',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     renderCell: (params) => {
       return (
         <ColoredIconCell
@@ -55,6 +57,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Package Size',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value) => {
       if (!value) {
         return null;
@@ -68,6 +71,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'dateTime',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value) => {
       if (!value) {
         return value;

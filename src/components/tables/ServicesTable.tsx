@@ -18,6 +18,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Name',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     renderCell: (params) => {
       return (
         <BopmaticLink
@@ -39,6 +40,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'API Health',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     renderCell: (params) => {
       return (
         <ColoredIconCell
@@ -53,6 +55,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'API Definition',
     flex: 3,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       return '-';
     },
@@ -62,6 +65,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Port',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 150,
     valueGetter: (value, row) => {
       return '-';
     },
@@ -72,6 +76,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     flex: 1,
     type: 'number',
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 120,
     valueGetter: (value, row) => {
       if (!row.rpcEndpoints) {
         return null;

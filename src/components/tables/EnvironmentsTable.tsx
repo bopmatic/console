@@ -13,6 +13,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Name',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value, row) => {
       if (!row.header?.name) {
         return null;
@@ -25,12 +26,14 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Environment ID',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
   },
   {
     field: 'dnsPrefix',
     headerName: 'DNS Prefix',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value, row) => {
       if (!row.header?.dnsPrefix) {
         return null;
@@ -44,6 +47,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'dateTime',
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
     valueGetter: (value, row) => {
       if (!row.createTime) {
         return null;
