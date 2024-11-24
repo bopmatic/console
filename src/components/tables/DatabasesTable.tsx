@@ -39,7 +39,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     type: 'number',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
-    minWidth: 100,
+    minWidth: 200,
     valueGetter: (value, row) => {
       if (!row.tables) {
         return null;

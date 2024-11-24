@@ -108,6 +108,8 @@ const ProjectDetails: React.FC = () => {
             value={value}
             onChange={handleChange}
             aria-label="basic tabs example"
+            variant="scrollable"
+            scrollButtons="auto"
             sx={{
               '.Mui-selected': { color: '#A06603' },
               '.MuiTabs-indicator': { backgroundColor: '#A06603' },
