@@ -124,10 +124,15 @@ const ServiceDetails: React.FC = () => {
           key: 'Port',
           value: serviceDescription.port ?? '-',
         },
+        {
+          key: 'Logs',
+          value: 'View logs',
+          linkTo: `/logs?projectId=${projectId}&serviceName=${serviceName}`,
+        },
       ];
       setServiceProperties(props);
     }
-  }, [serviceDescription]);
+  }, [projectId, serviceDescription, serviceName]);
 
   return (
     <div>
@@ -215,8 +220,8 @@ const ServiceDetails: React.FC = () => {
         </Grid>
         <Grid size={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
           <LineChart
-            chartName="5xx Count"
-            yAxisLabel="Num. 5xx"
+            chartName="Error count"
+            yAxisLabel="Num. errors"
             data={errorsMetricsData}
             options={getChartJsOptionsForEnum(totalErrorsTime)}
             currTime={totalErrorsTime}

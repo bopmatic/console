@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getBopmaticClient } from '../client/client';
 import { ServiceDescription } from '../client';
 import { useAtom, useSetAtom } from 'jotai';
@@ -10,7 +10,9 @@ export const useServices = (
   envId: string | undefined
 ): Array<ServiceDescription> | undefined => {
   const [servicesData] = useAtom(servicesAtom); // Use the atom to read and update data
-  const projectServicesData = projectId ? servicesData[projectId] : undefined;
+  const projectServicesData = useMemo(() => {
+    return projectId ? servicesData[projectId] : undefined;
+  }, [servicesData, projectId]);
   const setServicesData = useSetAtom(servicesAtom); // Another way to set data
   const setServicesLoadingData = useSetAtom(servicesLoadingAtom);
   // NOTE: if serviceNames is undefined it means we haven't made the ListServices API call yet in useServiceNames for this particular project ID
@@ -43,8 +45,9 @@ export const useServices = (
               services.push(projectDesc);
             }
           }
-          servicesData[projectId as string] = services;
-          setServicesData(servicesData);
+          const updatedServicesData = { ...servicesData };
+          updatedServicesData[projectId as string] = services;
+          setServicesData(updatedServicesData);
           setServicesLoadingData(false);
         }
       } catch (error) {

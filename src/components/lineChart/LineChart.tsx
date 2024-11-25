@@ -69,7 +69,7 @@ const LineChart: React.FC<LineChartProps> = ({
   errorText,
 }) => {
   return (
-    <div className="bg-white border-bopgreyborder border p-4 min-h-80 rounded">
+    <div className="bg-white border-bopgreyborder border p-4 min-h-60 rounded">
       <div className="flex justify-between">
         <h3>{chartName}</h3>
         <LineChartTimeDropdown currTime={currTime} setCurrTime={setCurrTime} />

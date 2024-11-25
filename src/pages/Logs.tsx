@@ -18,6 +18,7 @@ import LogsTable from '../components/tables/LogsTable';
 import Button from '@mui/material/Button';
 import { getLogs } from '../components/utils/logUtils';
 import { GetLogsEntry } from '../client';
+import { useSearchParams } from 'react-router-dom';
 
 const Logs: React.FC = () => {
   const [envId, setEnvId] = useState<string>('');
@@ -34,6 +35,7 @@ const Logs: React.FC = () => {
   const [isLoadingLogs, setIsLoadingLogs] = useState<boolean>(false);
   const [isLogsInitialized, setIsLogsInitialized] = useState<boolean>(false);
   const [logsError, setLogsError] = useState<string>();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (environments && environments.length) {
@@ -43,9 +45,23 @@ const Logs: React.FC = () => {
 
   useEffect(() => {
     if (projects && projects.length) {
-      setProjId(projects[0].id as string);
+      if (searchParams.get('projectId')) {
+        setProjId(searchParams.get('projectId') as string);
+      } else {
+        setProjId(projects[0].id as string);
+      }
     }
-  }, [projects]);
+  }, [projects, searchParams]);
+
+  useEffect(() => {
+    if (services && services.length) {
+      if (searchParams.get('serviceName')) {
+        setService(searchParams.get('serviceName') as string);
+      } else {
+        setService('allServices');
+      }
+    }
+  }, [searchParams, services]);
 
   const handleEnvChange = (event: SelectChangeEvent) => {
     setEnvId(event.target.value);

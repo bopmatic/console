@@ -40,7 +40,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       return (
         <ColoredIconCell
           value="Healthy"
-          type={ColoredIconColumnType.PROJECT_STATE}
+          type={ColoredIconColumnType.PROJECT_HEALTH}
         />
       );
     },

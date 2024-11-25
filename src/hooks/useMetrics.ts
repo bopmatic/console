@@ -101,7 +101,7 @@ export const useMetrics = (
             groupByMetricName,
             quantileVal
           );
-          console.log('chartData:', chartData);
+          // console.log('chartData:', chartData);
           // populate null data points to force ChartJs to respect the start and end time so data is relative to the window
           chartData = populateHourlyData(startTime, endTime, chartData);
           setErrorText(undefined); // make sure to empty out any errors that may have existed before

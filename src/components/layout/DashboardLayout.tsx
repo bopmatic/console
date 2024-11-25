@@ -52,11 +52,11 @@ const DashboardLayout: React.FC = () => {
   }, [accessToken]);
 
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       <Header />
-      <div className="flex justify-between">
+      <div className="flex flex-grow overflow-hidden">
         <LeftNav />
-        <div className="flex-grow h-screen overflow-auto bg-bopgreybkg p-6">
+        <div className="flex-grow h-full overflow-y-auto bg-bopgreybkg p-6">
           <Outlet />
         </div>
       </div>

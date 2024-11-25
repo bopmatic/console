@@ -11,6 +11,7 @@ import {
   getTimeTypeFromElementText,
   TIME_TYPE,
 } from './utils';
+import { useNavigate } from 'react-router-dom';
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -69,10 +70,15 @@ const LineChartTimeDropdown: React.FC<LineChartTimeDropdownProps> = ({
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+  const navigate = useNavigate();
   const handleClose = (event: React.MouseEvent<HTMLElement>) => {
     const target = event.target as HTMLElement;
-    setCurrTime(getTimeTypeFromElementText(target.innerText));
-    setAnchorEl(null);
+    if (target.innerText.startsWith('Custom time')) {
+      navigate('/metrics');
+    } else {
+      setCurrTime(getTimeTypeFromElementText(target.innerText));
+      setAnchorEl(null);
+    }
   };
 
   return (
