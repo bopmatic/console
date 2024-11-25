@@ -2,8 +2,16 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { GetLogsEntry } from '../../client';
 import CircularProgress from '@mui/material/CircularProgress';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { useEffect } from 'react';
 
-let rows: GetLogsEntry[];
+// Wrapper type so we can add a unique ID to each logs entry.
+// This is required by Material UI Data Grid to property filter data in the grid.
+type GetLogsEntryWrapper = GetLogsEntry & {
+  id: string;
+};
+
+let rows: GetLogsEntryWrapper[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
   {
     field: 'timestamp',
@@ -24,12 +32,6 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 400,
-    valueGetter: (value, row) => {
-      if (!row.message) {
-        return null;
-      }
-      return row.message;
-    },
   },
 ];
 
@@ -38,6 +40,7 @@ type LogsTableProps = {
   isLoadingLogs: boolean;
   isLogsInitialized: boolean;
   logsError: string | undefined;
+  apiRef: React.MutableRefObject<GridApiCommunity>;
 };
 
 const generateUUID = (): string => {
@@ -52,16 +55,32 @@ const generateUUID = (): string => {
   );
 };
 
-const getRowId = () => {
-  return generateUUID();
-};
-
 const LogsTable: React.FC<LogsTableProps> = ({
   logEntries,
   isLoadingLogs,
   isLogsInitialized,
   logsError,
+  apiRef,
 }) => {
+  // This is required by Material UI Data Grid to property filter data in the grid.
+  const [logEntryWrappers, setLogEntryWrappers] = React.useState<
+    GetLogsEntryWrapper[] | undefined
+  >();
+  // This is required by Material UI Data Grid to property filter data in the grid.
+  useEffect(() => {
+    if (logEntries) {
+      // wrap each logEntry so we can add an ID required by Data Grid so we can filter properly
+      setLogEntryWrappers(
+        logEntries.map((l) => {
+          const w: GetLogsEntryWrapper = {
+            ...l,
+            id: generateUUID(),
+          };
+          return w;
+        })
+      );
+    }
+  }, [logEntries]);
   if (isLoadingLogs) {
     return (
       <div className="flex justify-center m-10">
@@ -110,10 +129,11 @@ const LogsTable: React.FC<LogsTableProps> = ({
   } else {
     return (
       <DataGrid
-        rows={logEntries ?? []}
+        rows={logEntryWrappers ?? []}
         columns={columns}
         loading={isLoadingLogs}
-        getRowId={getRowId}
+        // getRowId={getRowId}
+        apiRef={apiRef}
         initialState={{
           pagination: {
             paginationModel: {

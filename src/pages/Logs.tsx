@@ -19,6 +19,7 @@ import Button from '@mui/material/Button';
 import { getLogs } from '../components/utils/logUtils';
 import { GetLogsEntry } from '../client';
 import { useSearchParams } from 'react-router-dom';
+import { useGridApiRef } from '@mui/x-data-grid';
 
 const Logs: React.FC = () => {
   const [envId, setEnvId] = useState<string>('');
@@ -36,6 +37,7 @@ const Logs: React.FC = () => {
   const [isLogsInitialized, setIsLogsInitialized] = useState<boolean>(false);
   const [logsError, setLogsError] = useState<string>();
   const [searchParams] = useSearchParams();
+  const apiRef = useGridApiRef(); // Correctly typed API reference
 
   useEffect(() => {
     if (environments && environments.length) {
@@ -102,28 +104,26 @@ const Logs: React.FC = () => {
   };
 
   const downloadLogsHandler = () => {
-    // Convert JSON object to string
-    const jsonString = JSON.stringify(logs, null, 2);
+    if (!apiRef.current) return;
 
-    // Create a Blob from the JSON string
+    const fileName = `${projId}_${service}_${startTime?.unix()}_${endTime?.unix()}_logs.txt`;
+    const visibleSortedFilteredRows = apiRef.current
+      .getSortedRowIds()
+      .map((id) => {
+        return apiRef.current.getRow(id);
+      });
+
+    const jsonString = JSON.stringify(visibleSortedFilteredRows, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
-
-    // Create a link element
     const link = document.createElement('a');
-
-    // Set the link's href to a URL representing the Blob
     link.href = URL.createObjectURL(blob);
-    link.download = 'logs.txt';
-
-    // Programmatically click the link to trigger download
+    link.download = fileName;
     link.click();
-
-    // Clean up by revoking the object URL
     URL.revokeObjectURL(link.href);
   };
 
   return (
-    <div>
+    <div style={{ minWidth: '760px' }}>
       <PageHeader title="Logs" hideEnvironment={true} />
       <div className="p-6 bg-white rounded border-bopgreyborder border">
         <form onSubmit={handleFormSubmit}>
@@ -226,20 +226,15 @@ const Logs: React.FC = () => {
           isLoadingLogs={isLoadingLogs}
           isLogsInitialized={isLogsInitialized}
           logsError={logsError}
+          apiRef={apiRef}
         />
         <Button
-          variant="outlined"
+          variant="contained"
           color="primary"
           type="submit"
           disabled={!logs.length}
           onClick={downloadLogsHandler}
-          sx={{
-            ml: 1,
-            fontWeight: 'bold',
-            maxHeight: 55,
-            color: '#5A607F',
-            borderColor: '#5A607F',
-          }}
+          sx={{ ml: 1, fontWeight: 'bold', maxHeight: 55 }}
         >
           Download logs
         </Button>
