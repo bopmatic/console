@@ -27,7 +27,7 @@ export const useProjectSite = (
       } catch (error) {
         // TODO: Handle errors
         console.log('error:', error);
-        setSite('-');
+        setSite('');
       }
       setIsLoading(false);
     };

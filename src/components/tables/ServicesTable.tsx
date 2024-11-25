@@ -57,7 +57,10 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 150,
     valueGetter: (value, row) => {
-      return '-';
+      if (!row.apiDef) {
+        return '-';
+      }
+      return row.apiDef;
     },
   },
   {
@@ -67,7 +70,10 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 150,
     valueGetter: (value, row) => {
-      return '-';
+      if (!row.port) {
+        return '-';
+      }
+      return row.port;
     },
   },
   {
@@ -128,7 +134,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({
           <CircularProgress />
         </div>
       ) : !services ? (
-        <EmptyTable resourceName="services" />
+        <EmptyTable resourceName="service" />
       ) : (
         <DataGrid
           rows={serviceNamesFilter ? servicesFiltered : services}

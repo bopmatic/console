@@ -42,7 +42,7 @@ const ProjectDetails: React.FC = () => {
       const props: KeyValuePair[] = [
         {
           key: 'Production state',
-          value: projectDetails?.state !== 'ACTIVE' ? '-' : 'Healthy',
+          value: projectDetails?.state !== 'ACTIVE' ? undefined : 'Healthy',
           isColoredIcon: true,
           coloredIconColumnType: ColoredIconColumnType.PROJECT_HEALTH,
         },

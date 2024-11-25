@@ -88,7 +88,7 @@ const DatabasesTable: React.FC<DatabasesTableProps> = ({
           <CircularProgress />
         </div>
       ) : !databases ? (
-        <EmptyTable resourceName="databases" />
+        <EmptyTable resourceName="database" />
       ) : (
         <DataGrid
           rows={databaseNamesFilter ? databasesFiltered : databases}

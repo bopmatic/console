@@ -114,7 +114,7 @@ const PackagesTable: React.FC<PackagesTableProps> = ({ projId }) => {
           <CircularProgress />
         </div>
       ) : !packages ? (
-        <EmptyTable resourceName="packages" />
+        <EmptyTable resourceName="package" />
       ) : (
         <DataGrid
           rows={packages ?? []}

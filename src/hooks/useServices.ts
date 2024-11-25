@@ -67,6 +67,8 @@ export const useServices = (
       // setProjectLoadingAtom(true);
       fetchData();
       setServicesLoadingData(true);
+    } else if (serviceNames && !serviceNames.length) {
+      setServicesLoadingData(false);
     }
   }, [
     envId,

@@ -54,6 +54,8 @@ export const usePackages = (projectId: string | undefined) => {
       // Only fetch if the data isn't already loaded
       fetchData();
       setPackagesLoadingData(true);
+    } else if (packageItems && !packageItems.length) {
+      setPackagesLoadingData(false);
     }
   }, [
     packageItems,

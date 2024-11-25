@@ -61,6 +61,8 @@ export const useDeployments = (
       // Only fetch if the data isn't already loaded
       fetchData();
       setDeploymentsLoadingData(true);
+    } else if (deploymentIds && !deploymentIds.length) {
+      setDeploymentsLoadingData(false);
     }
   }, [
     deploymentIds,

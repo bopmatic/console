@@ -30,7 +30,9 @@ const BopmaticTableContainer: React.FC<BopmaticTableContainerProps> = ({
               <div className="flex items-center">
                 <h2>{tableResource}</h2>
                 {includeNumResources && (
-                  <div className="ml-2 text-bopgreytext">({numResources})</div>
+                  <div className="ml-2 text-bopgreytext">
+                    ({numResources ?? 0})
+                  </div>
                 )}
               </div>
               {subtitle && (

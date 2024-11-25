@@ -66,12 +66,16 @@ const PropertiesContainer: React.FC<PropertiesContainerProps> = ({
                     value={keyValuePair.value}
                     type={keyValuePair.coloredIconColumnType}
                   />
-                ) : keyValuePair.linkTo ? (
+                ) : keyValuePair.linkTo && keyValuePair.value?.length ? (
                   <BopmaticLink to={keyValuePair.linkTo}>
                     {keyValuePair.value}
                   </BopmaticLink>
                 ) : (
-                  <div>{keyValuePair.value}</div>
+                  <div>
+                    {keyValuePair.value && keyValuePair.value.length
+                      ? keyValuePair.value
+                      : '-'}
+                  </div>
                 )}
               </div>
             </Grid>

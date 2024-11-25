@@ -165,7 +165,7 @@ const DeploymentsTable: React.FC<DeploymentsTableProps> = ({
           <CircularProgress />
         </div>
       ) : !deployments ? (
-        <EmptyTable resourceName="deployments" />
+        <EmptyTable resourceName="deployment" />
       ) : (
         <DataGrid
           rows={deployments ?? []}
