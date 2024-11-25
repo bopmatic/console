@@ -1,8 +1,16 @@
-import { Modal, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Modal,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import * as React from 'react';
-import { TextField, Button, Stack, Box } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useState } from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -31,11 +39,11 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [stage, setStage] = useState<'initiate' | 'success'>('initiate');
-  const [keyId, setKeyId] = useState<string>('');
   const [keyData, setKeyData] = useState<string>('');
   const [copyClipboardMsg, setCopyClipboardMsg] = useState<string>('');
   const [copyClipboardErrorMsg, setCopyClipboardErrorMsg] =
     useState<string>('');
+  const [neverExpireChecked, setNeverExpireChecked] = useState<boolean>(true);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -46,6 +54,7 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
     setName('');
     setDescription('');
     setExpirationDate(dayjs().add(1, 'year'));
+    setNeverExpireChecked(true);
     handleClose();
   };
 
@@ -71,15 +80,20 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
       });
   };
 
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = event.target;
+    setNeverExpireChecked(checked);
+  };
+
   const createKey = () => {
-    if (!expirationDate) {
+    if (!neverExpireChecked && !expirationDate) {
       setErrorMsg('Expiration date is required');
       return;
     }
-    const expireTime = Math.floor(expirationDate.valueOf() / 1000).toString();
-    const req: CreateApiKeyRequest = {
-      expireTime: expireTime,
-    };
+    const req: CreateApiKeyRequest = {};
+    if (!neverExpireChecked && expirationDate) {
+      req.expireTime = Math.floor(expirationDate.valueOf() / 1000).toString();
+    }
     if (name && name.length) {
       req.name = name;
     }
@@ -91,7 +105,6 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
       .createApiKey(req)
       .then((res) => {
         if (res) {
-          setKeyId(res.data.keyId as string);
           setKeyData(res.data.keyData as string);
         }
         // success, now go and refresh keys
@@ -148,20 +161,33 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
               onChange={(e) => setDescription(e.target.value)}
               sx={{ mt: 4 }}
             />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Expiration date"
-                value={expirationDate}
-                onChange={handleExpirationDateChange}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    required: true,
-                  },
-                }}
-                sx={{ mt: 4 }}
-              />
-            </LocalizationProvider>
+            <FormControlLabel
+              sx={{ mt: 2 }}
+              control={
+                <Checkbox
+                  name="neverExpireCheckbox"
+                  checked={neverExpireChecked}
+                  onChange={handleCheckboxChange}
+                />
+              }
+              label="Never expire this API key"
+            />
+            {!neverExpireChecked && (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Expiration date"
+                  value={expirationDate}
+                  onChange={handleExpirationDateChange}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      required: true,
+                    },
+                  }}
+                  sx={{ mt: 4 }}
+                />
+              </LocalizationProvider>
+            )}
             <Stack
               direction="row"
               spacing={2}
@@ -212,15 +238,9 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
               </div>
               <div className="flex justify-center mt-4">
                 <div className="text-bopgreytext text-sm text-center">
-                  Below is your Key ID and Key Secret (data). You won't be able
-                  to recover the secret part of your key at a later time. Please
-                  ensure you save this somewhere before pressing continue.
-                </div>
-              </div>
-              <div className="text-sm text-bopgreytext mt-6">
-                <div className="font-bold">Key ID:</div>
-                <div className="bg-gray-100 border border-gray-300 text-sm text-gray-800 font-mono p-4 rounded overflow-auto">
-                  {keyId}
+                  Below is your Key Secret (data). You won't be able to recover
+                  the secret part of your key at a later time. Please ensure you
+                  save this somewhere before pressing continue.
                 </div>
               </div>
               <div className="text-sm text-bopgreytext mt-2">
