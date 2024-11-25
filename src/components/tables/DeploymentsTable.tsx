@@ -4,7 +4,7 @@ import ColoredIconCell from './ColoredIconCell';
 import {
   ColoredIconColumnType,
   formatCompletionTime,
-  parseDeployTypeOrInitiator,
+  parseDeployTypeInitiatorStateDetail,
 } from './utils';
 import BopmaticLink from '../link/BopmaticLink';
 import { DeploymentDescription } from '../../client';
@@ -15,6 +15,7 @@ import BopmaticTableContainer from './BopmaticTableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmptyTable from './EmptyTable';
 import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
+import { Tooltip } from '@mui/material';
 
 let rows: DeploymentDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -63,12 +64,28 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 175,
     renderCell: (params) => {
-      return (
-        <ColoredIconCell
-          value={params.value}
-          type={ColoredIconColumnType.DEPLOYMENT_STATE}
-        />
-      );
+      if (!params.row.stateDetail || params.row.stateDetail === 'NONE') {
+        return (
+          <ColoredIconCell
+            value={params.value}
+            type={ColoredIconColumnType.DEPLOYMENT_STATE}
+          />
+        );
+      } else {
+        return (
+          <Tooltip
+            title={parseDeployTypeInitiatorStateDetail(params.row.stateDetail)}
+            arrow
+          >
+            <div className="underline">
+              <ColoredIconCell
+                value={params.value}
+                type={ColoredIconColumnType.DEPLOYMENT_STATE}
+              />
+            </div>
+          </Tooltip>
+        );
+      }
     },
   },
   {
@@ -76,12 +93,12 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Initiator',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
-    minWidth: 175,
+    minWidth: 125,
     valueGetter: (value, row) => {
       if (!row.header?.initiator) {
         return null;
       }
-      return parseDeployTypeOrInitiator(row.header?.initiator);
+      return parseDeployTypeInitiatorStateDetail(row.header?.initiator);
     },
   },
   {
@@ -89,12 +106,25 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerName: 'Type',
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
-    minWidth: 150,
+    minWidth: 125,
     valueGetter: (value, row) => {
       if (!row.header?.type) {
         return null;
       }
-      return parseDeployTypeOrInitiator(row.header?.type);
+      return parseDeployTypeInitiatorStateDetail(row.header?.type);
+    },
+  },
+  {
+    field: 'reason',
+    headerName: 'Reason',
+    flex: 1,
+    headerClassName: 'bopmatic-table-column-header',
+    minWidth: 100,
+    valueGetter: (value, row) => {
+      if (!row.header?.reason) {
+        return '-';
+      }
+      return row.header?.reason;
     },
   },
   {
@@ -104,11 +134,11 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     flex: 2,
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 175,
-    valueGetter: (value) => {
-      if (!value) {
-        return value;
+    valueGetter: (value, row) => {
+      if (!row.endTime) {
+        return null;
       }
-      return new Date(parseInt(value) * 1000);
+      return new Date(parseInt(row.endTime) * 1000);
     },
     valueFormatter: (value?: Date) => {
       if (value instanceof Date) {
@@ -164,7 +194,7 @@ const DeploymentsTable: React.FC<DeploymentsTableProps> = ({
         <div className="flex justify-center">
           <CircularProgress />
         </div>
-      ) : !deployments ? (
+      ) : !deployments || !deployments.length ? (
         <EmptyTable resourceName="deployment" />
       ) : (
         <DataGrid

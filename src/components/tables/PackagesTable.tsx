@@ -113,7 +113,7 @@ const PackagesTable: React.FC<PackagesTableProps> = ({ projId }) => {
         <div className="flex justify-center">
           <CircularProgress />
         </div>
-      ) : !packages ? (
+      ) : !packages || !packages.length ? (
         <EmptyTable resourceName="package" />
       ) : (
         <DataGrid

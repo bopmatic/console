@@ -1,4 +1,8 @@
-import { DeploymentInitiator, DeploymentType } from '../../client';
+import {
+  DeploymentInitiator,
+  DeploymentStateDetail,
+  DeploymentType,
+} from '../../client';
 
 export enum ColumnStatus {
   SUCCESS = 'SUCCESS',
@@ -25,13 +29,13 @@ export const formatCompletionTime = (seconds: number): string => {
   return `${hoursPart}${minutesPart}${secondsPart}`.trim();
 };
 
-export const parseDeployTypeOrInitiator = (
-  deployType: DeploymentType | DeploymentInitiator
+export const parseDeployTypeInitiatorStateDetail = (
+  enumVal: DeploymentType | DeploymentInitiator | DeploymentStateDetail
 ) => {
-  if (!deployType) return undefined;
+  if (!enumVal) return undefined;
 
   // Replace underscores, make lowercase, capitalize first letter
-  return deployType
+  return enumVal
     .toLowerCase()
     .replace(/_/g, ' ')
     .replace(/^\w/, (c) => c.toUpperCase());

@@ -87,7 +87,7 @@ const DatabasesTable: React.FC<DatabasesTableProps> = ({
         <div className="flex justify-center">
           <CircularProgress />
         </div>
-      ) : !databases ? (
+      ) : !databases || !databases.length ? (
         <EmptyTable resourceName="database" />
       ) : (
         <DataGrid

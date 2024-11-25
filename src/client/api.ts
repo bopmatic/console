@@ -580,6 +580,12 @@ export interface DeploymentHeader {
      * @memberof DeploymentHeader
      */
     'initiator'?: DeploymentInitiator;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeploymentHeader
+     */
+    'reason'?: string;
 }
 
 

@@ -133,7 +133,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({
         <div className="flex justify-center">
           <CircularProgress />
         </div>
-      ) : !services ? (
+      ) : !services || !services.length ? (
         <EmptyTable resourceName="service" />
       ) : (
         <DataGrid

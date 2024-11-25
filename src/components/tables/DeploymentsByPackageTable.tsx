@@ -5,7 +5,7 @@ import ColoredIconCell from './ColoredIconCell';
 import {
   ColoredIconColumnType,
   formatCompletionTime,
-  parseDeployTypeOrInitiator,
+  parseDeployTypeInitiatorStateDetail,
 } from './utils';
 import BopmaticLink from '../link/BopmaticLink';
 import { DeploymentDescription } from '../../client';
@@ -71,7 +71,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.header?.initiator) {
         return null;
       }
-      return parseDeployTypeOrInitiator(row.header?.initiator);
+      return parseDeployTypeInitiatorStateDetail(row.header?.initiator);
     },
   },
   {
@@ -84,7 +84,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.header?.type) {
         return null;
       }
-      return parseDeployTypeOrInitiator(row.header?.type);
+      return parseDeployTypeInitiatorStateDetail(row.header?.type);
     },
   },
   {
@@ -98,7 +98,6 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.endTime) {
         return null;
       }
-      // TODO: Fix this once mike returns timestamps for us here
       return new Date(parseInt(row.endTime) * 1000);
     },
   },

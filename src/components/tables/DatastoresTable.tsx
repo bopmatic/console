@@ -105,7 +105,7 @@ const DatastoresTable: React.FC<DatastoresTableProps> = ({
         <div className="flex justify-center">
           <CircularProgress />
         </div>
-      ) : !datastores ? (
+      ) : !datastores || !datastores.length ? (
         <EmptyTable resourceName="datastore" />
       ) : (
         <DataGrid
