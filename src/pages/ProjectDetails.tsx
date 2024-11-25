@@ -22,6 +22,7 @@ import { usePackageItems } from '../hooks/usePackageItems';
 import PageHeader from '../components/pageHeader/pageHeader';
 import { bopmaticDateFormat } from '../components/utils/dateUtils';
 import { useProjectSite } from '../hooks/useProjectSite';
+import { useSearchParams } from 'react-router-dom';
 
 const ProjectDetails: React.FC = () => {
   const { id } = useParams();
@@ -36,6 +37,7 @@ const ProjectDetails: React.FC = () => {
   const deploymentIds = useDeploymentIds(id, environment?.id);
   const packageItems = usePackageItems(id);
   const [site] = useProjectSite(id, environment?.id);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (projectDetails) {
@@ -83,6 +85,24 @@ const ProjectDetails: React.FC = () => {
   }, [projectDetails, site]);
 
   const [value, setValue] = React.useState(0);
+
+  // Synchronize the state with the URL query parameter when it changes
+  useEffect(() => {
+    const t = searchParams.get('tab');
+    if (!t) {
+      return;
+    }
+    let currentTab = 0;
+    if (t === 'services') currentTab = 0;
+    else if (t === 'databases') currentTab = 1;
+    else if (t === 'datastores') currentTab = 2;
+    else if (t === 'deployments') currentTab = 3;
+    else if (t === 'packages') currentTab = 4;
+    if (currentTab !== value) {
+      setValue(currentTab);
+    }
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [searchParams]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

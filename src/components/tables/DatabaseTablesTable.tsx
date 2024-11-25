@@ -2,7 +2,6 @@ import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAtom } from 'jotai';
 import { databasesLoadingAtom } from '../../atoms';
-import BopmaticLink from '../link/BopmaticLink';
 import { useDatabases } from '../../hooks/useDatabases';
 import BopmaticTableContainer from './BopmaticTableContainer';
 import { DatabaseTableDescription } from '../../client';
@@ -17,13 +16,6 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     flex: 1,
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 150,
-    renderCell: (params) => {
-      return (
-        <BopmaticLink to={`${params.value}`} target="_blank">
-          {params.value}
-        </BopmaticLink>
-      );
-    },
     valueGetter: (value, row) => {
       if (!row.Name) {
         return null;

@@ -66,7 +66,7 @@ const BopmaticBreadcrumbs: React.FC = () => {
             'packages',
           ].includes(value)
         ) {
-          const previousTo = `/${pathnames.slice(0, index).join('/')}#${value}`;
+          const previousTo = `/${pathnames.slice(0, index).join('/')}?tab=${value}`;
           return (
             <BopmaticLink to={previousTo} key={previousTo}>
               {upperCaseValue}
