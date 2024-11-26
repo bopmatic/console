@@ -1,6 +1,7 @@
 import { Configuration } from './configuration';
 import { BASE_PATH } from './base';
 import { ServiceRunnerApi } from './api';
+import { SignUpApi } from './signupapi';
 
 let token = '';
 
@@ -20,6 +21,12 @@ let client = new ServiceRunnerApi(configuration);
 
 export const getBopmaticClient = () => {
   return client;
+};
+
+const signupClient = new SignUpApi();
+
+export const getSignupClient = () => {
+  return signupClient;
 };
 
 export default getBopmaticClient;

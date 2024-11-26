@@ -30,11 +30,11 @@ srapi: openapi-generator-cli.jar sdk/golang/pb/sr.bopmatic.json
 
 signupapi: openapi-generator-cli.jar sdk/golang/pb/signup.bopmatic.json
 	$(OPENAPIGENJS) -o signupapi -i sdk/golang/pb/signup.bopmatic.json
-	cp ./srapi/api.ts ./src/client/signupapi.ts
-	cp ./srapi/base.ts ./src/client/signupapibase.ts
-	cp ./srapi/common.ts ./src/client/signupcommon.ts
-	cp ./srapi/configuration.ts ./src/client/signupconfig.ts
-	cp ./srapi/index.ts ./src/client/signupindex.ts
+	cp ./signupapi/api.ts ./src/client/signupapi.ts
+	cp ./signupapi/base.ts ./src/client/signupapibase.ts
+	cp ./signupapi/common.ts ./src/client/signupcommon.ts
+	cp ./signupapi/configuration.ts ./src/client/signupconfig.ts
+	cp ./signupapi/index.ts ./src/client/signupindex.ts
 
 .PHONY: clean
 clean:
