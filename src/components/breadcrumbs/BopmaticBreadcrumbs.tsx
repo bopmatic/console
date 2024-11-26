@@ -80,7 +80,7 @@ const BopmaticBreadcrumbs: React.FC = () => {
           </Typography>
         ) : (
           <BopmaticLink to={to} key={to}>
-            {value.startsWith('proj-') ? value : upperCaseValue}
+            {value}
           </BopmaticLink>
         );
       })}

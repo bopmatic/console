@@ -1,8 +1,13 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useEnvironments } from '../../hooks/useEnvironments';
 
 /**
  * Selector for Environment
@@ -11,50 +16,40 @@ import MenuItem from '@mui/material/MenuItem';
  * @constructor
  */
 const EnvSelector: React.FC = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const [envId, setEnvId] = useState<string>('');
+  const environments = useEnvironments();
+
+  const handleEnvChange = (event: SelectChangeEvent) => {
+    setEnvId(event.target.value);
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
+  useEffect(() => {
+    if (environments && environments.length) {
+      setEnvId(environments[0].id as string);
+    }
+  }, [environments]);
 
   return (
     <div>
-      <Button
-        id="env-dropdown-customized-button"
-        aria-controls={open ? 'env-dropdown-customized-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        variant="text"
-        disableElevation
-        onClick={handleClick}
-        sx={{
-          color: 'black',
-          fontSize: '1.5rem',
-          fontWeight: '700',
-          '& .MuiSvgIcon-root': {
-            fontSize: '2rem', // Ensure the end icon matches this size
-          },
-        }}
-        endIcon={<KeyboardArrowDownIcon />}
-      >
-        Production
-      </Button>
-      <Menu
-        id="env-dropdown-customized-menu"
-        MenuListProps={{
-          'aria-labelledby': 'env-dropdown-customized-button',
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleClose} disableRipple>
-          Production
-        </MenuItem>
-      </Menu>
+      <FormControl sx={{ minWidth: 200, backgroundColor: 'white' }}>
+        <InputLabel id="env-label">Environment</InputLabel>
+        <Select
+          labelId="env-label"
+          id="env"
+          value={envId}
+          onChange={handleEnvChange}
+          autoWidth
+          label="Environment"
+        >
+          {environments?.map((envDesc, index) => {
+            return (
+              <MenuItem value={envDesc.id} key={index}>
+                {envDesc.header?.name}
+              </MenuItem>
+            );
+          })}
+        </Select>
+      </FormControl>
     </div>
   );
 };
