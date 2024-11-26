@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MetricSelectionCard from '../components/metricSelectionCard/MetricSelectionCard';
 import BopmaticLink from '../components/link/BopmaticLink';
 import { useProjects } from '../hooks/useProjects';
-import { useEnvironment } from '../hooks/useEnvironment';
 import CircularProgress from '@mui/material/CircularProgress';
 import {
+  deselectMetricInTree,
   fetchAllDatabaseTreeElements,
   fetchAllDatastoreTreeElements,
   fetchAllServicesTreeElements,
+  getResourceTypeForDisplay,
   getRowId,
   getSelectedMetrics,
   ListMetricsEntryWrapper,
@@ -25,21 +23,25 @@ import { MetricsScope } from '../client';
 import { DataGrid, GridRowSelectionModel } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import CustomMetricsLineChart from '../components/customMetricsLineChart/CustomMetricsLineChart';
+import { FormControl, IconButton, InputLabel, Select } from '@mui/material';
+import { useEnvironments } from '../hooks/useEnvironments';
+import { Close as CloseIcon } from '@mui/icons-material';
 
 const Metrics: React.FC = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
   const projects = useProjects();
-  const environment = useEnvironment();
+  const environments = useEnvironments();
+  const [envId, setEnvId] = useState<string>('');
+  useEffect(() => {
+    if (environments && environments.length) {
+      setEnvId(environments[0].id as string);
+    }
+  }, [environments]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [metricEntries, setMetricsEntries] = useState<
     ListMetricsEntryWrapper[]
   >([]);
   const [isLoadingMetricEntries, setIsLoadingMetricEntries] =
     useState<boolean>(false);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
   const [currentMetricNavigationElement, setCurrentMetricNavigationElement] =
     useState<MetricsNavigationTreeElement>(ROOT_NODE);
   const [breadcumbs, setBreadcumbs] = useState<MetricsNavigationTreeElement[]>([
@@ -50,10 +52,6 @@ const Metrics: React.FC = () => {
   const [allSelectedMetrics, setAllSelectedMetrics] = React.useState<
     ListMetricsEntryWrapper[]
   >([]);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
   // Helper function to batch the API calls for ListMetrics()
   const getMetricEntries = (scopes: MetricsScope[]) => {
     const apiCalls = [];
@@ -97,16 +95,12 @@ const Metrics: React.FC = () => {
       'METRIC_SCOPE_DATASTORE',
     ]);
   }, []);
-  /**
-   * TODO after MVP: Create caching layer here to avoid re-calling listServices/listDatabases/listDatastores
-   * @param index
-   */
   const handleElementClick = (index: number) => {
     if (currentMetricNavigationElement.children) {
       const nextElement = currentMetricNavigationElement.children?.[index];
       if (nextElement.cardContent === 'Services' && !nextElement?.children) {
         setIsLoading(true);
-        fetchAllServicesTreeElements(projects, environment, metricEntries)
+        fetchAllServicesTreeElements(projects, envId, metricEntries)
           .then((serviceElements) => {
             if (nextElement) {
               nextElement.children = serviceElements;
@@ -125,7 +119,7 @@ const Metrics: React.FC = () => {
         !nextElement?.children
       ) {
         setIsLoading(true);
-        fetchAllDatabaseTreeElements(projects, environment, metricEntries)
+        fetchAllDatabaseTreeElements(projects, envId, metricEntries)
           .then((databaseElements) => {
             if (nextElement) {
               nextElement.children = databaseElements;
@@ -144,7 +138,7 @@ const Metrics: React.FC = () => {
         !nextElement?.children
       ) {
         setIsLoading(true);
-        fetchAllDatastoreTreeElements(projects, environment, metricEntries)
+        fetchAllDatastoreTreeElements(projects, envId, metricEntries)
           .then((datastoreElements) => {
             if (nextElement) {
               nextElement.children = datastoreElements;
@@ -195,51 +189,105 @@ const Metrics: React.FC = () => {
     setAllSelectedMetrics(getSelectedMetrics([ROOT_NODE]));
   };
 
+  const deselectMetric = (
+    metricName: string | undefined,
+    resourceName: string | undefined,
+    projId: string | undefined
+  ) => {
+    deselectMetricInTree(
+      [ROOT_NODE],
+      metricName as string,
+      resourceName as string,
+      projId as string
+    );
+    setAllSelectedMetrics(getSelectedMetrics([ROOT_NODE]));
+    // now determine if the metric is in the current table view
+    // Check if the metric is in the current table view
+    setSelectedMetricEntries((prevSelected) => {
+      if (
+        metricName &&
+        prevSelected.includes(metricName) &&
+        currentMetricNavigationElement.projectName === projId &&
+        currentMetricNavigationElement.cardContent === resourceName
+      ) {
+        // Remove the deselected metric from the current table selections
+        return prevSelected.filter((name) => name !== metricName);
+      }
+      // No update needed if the metric isn't in the current table
+      return prevSelected;
+    });
+  };
+
   return (
     <div>
       <CustomMetricsLineChart
         allSelectedMetrics={allSelectedMetrics}
-        envId={environment?.id as string}
+        envId={envId as string}
       />
+      {allSelectedMetrics && allSelectedMetrics.length > 0 && (
+        <div className="mt-2">
+          <h2>Selected metrics:</h2>
+          {/*this is where we will show selected metrics with an "X" to remove*/}
+          <div className="flex">
+            {allSelectedMetrics?.map((metricWrapper, index) => {
+              return (
+                <div
+                  key={index}
+                  className="bg-white border-bopgreyborder border p-2 rounded mr-2"
+                >
+                  <div className="flex justify-between align-center">
+                    <div className="font-bold text-sm">
+                      {metricWrapper.name}
+                    </div>
+                    <IconButton
+                      size="small"
+                      sx={{ mt: -1, mr: -1 }}
+                      onClick={() =>
+                        deselectMetric(
+                          metricWrapper.name,
+                          metricWrapper.resourceName,
+                          metricWrapper.projectId
+                        )
+                      }
+                    >
+                      <span className="text-boperror text-sm">
+                        <CloseIcon />
+                      </span>
+                    </IconButton>
+                  </div>
+                  <div className="text-sm">
+                    {getResourceTypeForDisplay(metricWrapper.scope)}
+                    {metricWrapper.resourceName}
+                  </div>
+                  <div className="text-sm">{metricWrapper.projectId}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="mt-4">
         <h2>Available metrics:</h2>
       </div>
       <div className="flex mt-4 items-center">
-        <div>
-          <div>Environment:</div>
-          <div>
-            <Button
-              id="env-dropdown-customized-button"
-              aria-controls={open ? 'env-dropdown-customized-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? 'true' : undefined}
-              variant="outlined"
-              disableElevation
-              onClick={handleClick}
-              sx={{
-                borderColor: '#D7DBEC',
-                color: '#5A607F',
-                backgroundColor: 'white',
-              }}
-              endIcon={<KeyboardArrowDownIcon />}
-            >
-              Production
-            </Button>
-            <Menu
-              id="env-dropdown-customized-menu"
-              MenuListProps={{
-                'aria-labelledby': 'env-dropdown-customized-button',
-              }}
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-            >
-              <MenuItem onClick={handleClose} disableRipple>
-                Production
-              </MenuItem>
-            </Menu>
-          </div>
-        </div>
+        <FormControl sx={{ minWidth: 150 }}>
+          <InputLabel id="env-label">Environment</InputLabel>
+          <Select
+            labelId="env-label"
+            id="env"
+            value={envId}
+            autoWidth
+            label="Environment"
+          >
+            {environments?.map((envDesc, index) => {
+              return (
+                <MenuItem value={envDesc.id} key={index}>
+                  {envDesc.header?.name}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
         <div className="ml-4 flex">
           {breadcumbs.map((breadcumb, index) => (
             <React.Fragment key={index}>

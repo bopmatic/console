@@ -88,7 +88,6 @@ export const useCustomMetrics = (
               );
               const parsed1 = parsed0.replace(/ #Maximum/g, '');
               const parsed2 = parsed1.replace(/ #Average/g, '');
-              // console.log('pre parser:', parsed2);
               const parsed = parsePrometheusTextFormat(parsed2, 'api');
               // NOW: for each metric set, create a custom map that will hold all the metrics
               // then, at the end we can format the final version from this map with a helper function
@@ -97,9 +96,21 @@ export const useCustomMetrics = (
                 parsed,
                 associatedMetric.projectId as string,
                 associatedMetric.resourceName as string,
-                associatedMetric.name as string
+                associatedMetric.name as string,
+                associatedMetric.scope
               );
               allMetricDataSets.push(metricDataSet);
+            } else {
+              // there is no metric data returned from API for this metric and this timeframe
+              // we want to create a dataset of just nulls
+              const emptyDataset: MetricDataSet = {
+                dates: [],
+                values: [],
+                metricName: `${associatedMetric.name as string} (no data)`,
+                projectId: associatedMetric.projectId as string,
+                resourceName: associatedMetric.resourceName as string,
+              };
+              allMetricDataSets.push(emptyDataset);
             }
           });
           // convert to chart data

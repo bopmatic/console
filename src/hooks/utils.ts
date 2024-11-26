@@ -13,8 +13,15 @@ type DatabaseMetricsLabel = {
   database?: string;
 };
 
+type DatastoreMetricsLabel = {
+  environmentId: string;
+  period: string;
+  projectId: string;
+  datastore?: string;
+};
+
 type PromMetrics = {
-  labels?: ServiceMetricsLabel & DatabaseMetricsLabel;
+  labels?: ServiceMetricsLabel & DatabaseMetricsLabel & DatastoreMetricsLabel;
   timestamp_ms?: string;
   value?: string;
   quantiles?: { [key: string]: number };

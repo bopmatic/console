@@ -85,7 +85,6 @@ export const useMetrics = (
           const parsed2 = parsed1.replace(/ #Average/g, '');
           // console.log('pre parser:', parsed2);
           let parsed = parsePrometheusTextFormat(parsed2, 'api');
-          // console.log('parsed:', parsed);
           if (
             metricNames[0] === 'Capacity' &&
             datasetLabelKeys[0] === 'datastore'

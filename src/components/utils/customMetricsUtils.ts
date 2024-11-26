@@ -1,7 +1,7 @@
 import getBopmaticClient from '../../client/client';
 import {
-  EnvironmentDescription,
   ListMetricsEntry,
+  MetricsScope,
   ProjectDescription,
 } from '../../client';
 import { GridColDef } from '@mui/x-data-grid';
@@ -57,17 +57,17 @@ export const ROOT_NODE: MetricsNavigationTreeElement = {
 
 export const fetchAllServicesTreeElements = async (
   projects: ProjectDescription[] | null,
-  environment: EnvironmentDescription | undefined,
+  envId: string,
   metricEntries: ListMetricsEntryWrapper[]
 ) => {
   const serviceNameApiCalls = [];
-  if (projects && projects.length && environment?.id) {
+  if (projects && projects.length && envId) {
     for (let i = 0; i < projects.length; i++) {
       serviceNameApiCalls.push(
         getBopmaticClient().listServices({
           header: {
             projId: projects[i].id,
-            envId: environment?.id,
+            envId: envId,
           },
         })
       );
@@ -104,17 +104,17 @@ export const fetchAllServicesTreeElements = async (
 
 export const fetchAllDatabaseTreeElements = async (
   projects: ProjectDescription[] | null,
-  environment: EnvironmentDescription | undefined,
+  envId: string,
   metricEntries: ListMetricsEntryWrapper[]
 ) => {
   const databaseNameApiCalls = [];
-  if (projects && projects.length && environment?.id) {
+  if (projects && projects.length && envId) {
     for (let i = 0; i < projects.length; i++) {
       databaseNameApiCalls.push(
         getBopmaticClient().listDatabases({
           header: {
             projId: projects[i].id,
-            envId: environment?.id,
+            envId: envId,
           },
         })
       );
@@ -151,17 +151,17 @@ export const fetchAllDatabaseTreeElements = async (
 
 export const fetchAllDatastoreTreeElements = async (
   projects: ProjectDescription[] | null,
-  environment: EnvironmentDescription | undefined,
+  envId: string,
   metricEntries: ListMetricsEntryWrapper[]
 ) => {
   const datastoreNamesApiCalls = [];
-  if (projects && projects.length && environment?.id) {
+  if (projects && projects.length && envId) {
     for (let i = 0; i < projects.length; i++) {
       datastoreNamesApiCalls.push(
         getBopmaticClient().listDatastores({
           header: {
             projId: projects[i].id,
-            envId: environment?.id,
+            envId: envId,
           },
         })
       );
@@ -235,6 +235,55 @@ export const getSelectedMetrics = (
   return selectedMetrics;
 };
 
+export const deselectMetricInTree = (
+  tree: MetricsNavigationTreeElement[],
+  metricName: string,
+  resourceName: string,
+  projectId: string
+): void => {
+  const traverse = (node: MetricsNavigationTreeElement): boolean => {
+    // Check and update the metric entries
+    if (node.metricEntries) {
+      for (const entry of node.metricEntries) {
+        if (
+          entry.name === metricName &&
+          entry.resourceName === resourceName &&
+          entry.projectId === projectId
+        ) {
+          entry.isSelected = false; // Set isSelected to false
+          return true; // Stop traversal as the metric is found
+        }
+      }
+    }
+
+    // Recursively traverse children if the metric isn't found
+    if (node.children) {
+      for (const child of node.children) {
+        if (traverse(child)) {
+          return true; // Stop traversal as the metric is found
+        }
+      }
+    }
+
+    return false; // Metric not found in this branch
+  };
+
+  // Start traversal for each root element in the tree
+  tree.some((root) => traverse(root)); // Stop traversal once the metric is found
+};
+
+export const getResourceTypeForDisplay = (scope: MetricsScope | undefined) => {
+  if (scope === 'METRIC_SCOPE_SERVICE') {
+    return 'Service: ';
+  } else if (scope === 'METRIC_SCOPE_DATABASE') {
+    return 'Database: ';
+  } else if (scope === 'METRIC_SCOPE_DATASTORE') {
+    return 'Datastore: ';
+  } else {
+    return '';
+  }
+};
+
 export const getRowId = (row: ListMetricsEntry) => {
   if (row.name) {
     return row.name;
@@ -256,7 +305,8 @@ export const generateMetricDataSet = (
   data: PromParsedFormat[],
   projectId: string,
   resourceName: string,
-  metricName: string
+  metricName: string,
+  scope: MetricsScope | undefined
 ): MetricDataSet => {
   // Find the metric with the specified name
   const metric = data.find((item) => item.name.split('_')[1] === metricName);
@@ -267,10 +317,24 @@ export const generateMetricDataSet = (
 
   // Filter metrics based on projectId and resourceName
   const filteredMetrics = metric.metrics.filter((entry) => {
-    return (
-      entry.labels?.projectId === projectId &&
-      entry.labels?.service === resourceName
-    );
+    if (scope === 'METRIC_SCOPE_SERVICE') {
+      return (
+        entry.labels?.projectId === projectId &&
+        entry.labels?.service === resourceName
+      );
+    } else if (scope === 'METRIC_SCOPE_DATABASE') {
+      return (
+        entry.labels?.projectId === projectId &&
+        entry.labels?.database === resourceName
+      );
+    } else if (scope === 'METRIC_SCOPE_DATASTORE') {
+      return (
+        entry.labels?.projectId === projectId &&
+        entry.labels?.datastore === resourceName
+      );
+    } else {
+      return true;
+    }
   });
 
   // Extract dates and values
