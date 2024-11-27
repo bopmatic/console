@@ -8,6 +8,7 @@ import { useProjects } from '../../hooks/useProjects';
 import { ProjectDescription } from '../../client';
 import BopmaticTableContainer from './BopmaticTableContainer';
 import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
+import ProjectHealthTableCell from '../healthTableCells/ProjectHealthTableCell';
 
 let rows: ProjectDescription[];
 
@@ -64,12 +65,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (params.row.state !== 'ACTIVE') {
         return '-';
       } else {
-        return (
-          <ColoredIconCell
-            value="Healthy"
-            type={ColoredIconColumnType.PROJECT_HEALTH}
-          />
-        );
+        return <ProjectHealthTableCell projectId={params.row.id} />;
       }
     },
   },

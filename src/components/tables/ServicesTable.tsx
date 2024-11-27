@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import ColoredIconCell from './ColoredIconCell';
-import { ColoredIconColumnType } from './utils';
 import BopmaticLink from '../link/BopmaticLink';
 import { ServiceDescription } from '../../client';
 import { useServices } from '../../hooks/useServices';
@@ -10,6 +8,7 @@ import { servicesLoadingAtom } from '../../atoms';
 import BopmaticTableContainer from './BopmaticTableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmptyTable from './EmptyTable';
+import ServiceHealthTableCell from '../healthTableCells/ServiceHealthTableCell';
 
 let rows: ServiceDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -42,12 +41,19 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 150,
     renderCell: (params) => {
-      return (
-        <ColoredIconCell
-          value="Healthy"
-          type={ColoredIconColumnType.PROJECT_HEALTH}
-        />
-      );
+      if (
+        params.row.svcHeader?.projEnvHeader?.projId &&
+        params.row.svcHeader.serviceName
+      ) {
+        return (
+          <ServiceHealthTableCell
+            projectId={params.row.svcHeader?.projEnvHeader?.projId}
+            serviceName={params.row.svcHeader.serviceName}
+          />
+        );
+      } else {
+        return '';
+      }
     },
   },
   {

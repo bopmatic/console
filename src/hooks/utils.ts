@@ -1,3 +1,9 @@
+import { ApiHealth, ApiHealthWrapper } from '../atoms';
+import {
+  DEGRADED_GREATER_THAN_THRESHOLD,
+  HEALTHY_GREATER_THAN_THRESHOLD,
+} from '../ApiHealthConstants';
+
 type ServiceMetricsLabel = {
   environmentId: string;
   period: string;
@@ -360,4 +366,125 @@ export const populateHourlyData = (
   // Update the labels in the chartData object
   chartData.labels = sortedLabels;
   return chartData;
+};
+
+export const evaluateOverallHealth = (
+  apiHealthWrappers: ApiHealthWrapper[]
+): ApiHealth => {
+  let hasDegraded = false;
+
+  for (const wrapper of apiHealthWrappers) {
+    if (wrapper.health === ApiHealth.UNHEALTHY) {
+      return ApiHealth.UNHEALTHY; // Immediately return UNHEALTHY if any node is unhealthy
+    }
+    if (wrapper.health === ApiHealth.DEGRADED) {
+      hasDegraded = true; // Mark that at least one node is degraded
+    }
+  }
+
+  // Return DEGRADED if at least one node is degraded but none are unhealthy
+  if (hasDegraded) {
+    return ApiHealth.DEGRADED;
+  }
+
+  // If no nodes are degraded or unhealthy, return HEALTHY
+  return ApiHealth.HEALTHY;
+};
+
+export type ServiceApiWrapper = {
+  serviceName: string;
+  apiName: string;
+};
+
+export const updateOrAddApiHealthWrapper = (
+  _array: ApiHealthWrapper[] | null,
+  newItem: ApiHealthWrapper
+): ApiHealthWrapper[] => {
+  let array = _array;
+  if (!array) array = [];
+  const index = array.findIndex(
+    (item) =>
+      item.envId === newItem.envId &&
+      item.projectId === newItem.projectId &&
+      item.serviceName === newItem.serviceName &&
+      item.apiName === newItem.apiName
+  );
+
+  if (index !== -1) {
+    // Replace the existing item
+    const updatedArray = [...array];
+    updatedArray[index] = newItem;
+    return updatedArray;
+  }
+
+  // Add the new item if it doesn't exist
+  return [...array, newItem];
+};
+
+export const calculateApiSuccessRates = (metricsData: PromParsedFormat[]) => {
+  const successRates: Record<string, number> = {}; // Stores success rates for each API
+
+  // Create a map to group metrics by api
+  const metricsByApi: Record<
+    string,
+    { invocations?: number; errors?: number }
+  > = {};
+
+  metricsData.forEach((metric) => {
+    if (
+      metric.name === 'service_Invocations' ||
+      metric.name === 'service_Errors'
+    ) {
+      metric.metrics.forEach((entry) => {
+        const api = entry.labels?.api;
+        const value = entry.value ? parseFloat(entry.value) : 0;
+
+        if (api) {
+          if (!metricsByApi[api]) {
+            metricsByApi[api] = { invocations: 0, errors: 0 };
+          }
+
+          if (metric.name === 'service_Invocations') {
+            if (api && metricsByApi[api] && metricsByApi[api].invocations) {
+              metricsByApi[api].invocations =
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                value + metricsByApi[api].invocations;
+            } else {
+              metricsByApi[api].invocations = value;
+            }
+          } else if (metric.name === 'service_Errors') {
+            metricsByApi[api].errors = metricsByApi[api].errors
+              ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                value + metricsByApi[api].errors
+              : value;
+          }
+        }
+      });
+    }
+  });
+  console.log('metricsByApi:', metricsByApi);
+
+  // Calculate success rate for each API
+  Object.entries(metricsByApi).forEach(([api, data]) => {
+    const { invocations = 0, errors = 0 } = data;
+    if (invocations > 0) {
+      successRates[api] = 100 - (errors / invocations) * 100;
+    } else {
+      successRates[api] = 0; // Handle cases where invocations are 0
+    }
+  });
+
+  return successRates;
+};
+
+export const evaluateHealthStatus = (percentage: number): ApiHealth => {
+  if (percentage >= HEALTHY_GREATER_THAN_THRESHOLD) {
+    return ApiHealth.HEALTHY;
+  } else if (percentage >= DEGRADED_GREATER_THAN_THRESHOLD) {
+    return ApiHealth.DEGRADED;
+  } else {
+    return ApiHealth.UNHEALTHY;
+  }
 };

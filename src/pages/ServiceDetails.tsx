@@ -7,7 +7,6 @@ import { useEnvironment } from '../hooks/useEnvironment';
 import PropertiesContainer, {
   KeyValuePair,
 } from '../components/propertiesContainer/PropertiesContainer';
-import { ColoredIconColumnType } from '../components/tables/utils';
 import RpcEndpointsTable from '../components/tables/RpcEndpointsTable';
 import Grid from '@mui/material/Grid2';
 import DatabasesTable from '../components/tables/DatabasesTable';
@@ -112,9 +111,12 @@ const ServiceDetails: React.FC = () => {
       const props: KeyValuePair[] = [
         {
           key: 'Service health',
-          value: 'Healthy',
-          isColoredIcon: true,
-          coloredIconColumnType: ColoredIconColumnType.PROJECT_HEALTH,
+          value: '',
+          healthTableCellProps: {
+            envId: environment?.id,
+            projectId,
+            serviceName,
+          },
         },
         {
           key: 'API definition',
@@ -132,7 +134,7 @@ const ServiceDetails: React.FC = () => {
       ];
       setServiceProperties(props);
     }
-  }, [projectId, serviceDescription, serviceName]);
+  }, [environment?.id, projectId, serviceDescription, serviceName]);
 
   return (
     <div>

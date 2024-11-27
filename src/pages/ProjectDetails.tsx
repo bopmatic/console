@@ -45,8 +45,13 @@ const ProjectDetails: React.FC = () => {
         {
           key: 'Production state',
           value: projectDetails?.state !== 'ACTIVE' ? undefined : 'Healthy',
-          isColoredIcon: true,
-          coloredIconColumnType: ColoredIconColumnType.PROJECT_HEALTH,
+          healthTableCellProps:
+            projectDetails?.state !== 'ACTIVE'
+              ? undefined
+              : {
+                  envId: environment?.id,
+                  projectId: id,
+                },
         },
         {
           key: 'Project state',
@@ -82,7 +87,7 @@ const ProjectDetails: React.FC = () => {
       ];
       setProjectProperties(props);
     }
-  }, [projectDetails, site]);
+  }, [environment?.id, id, projectDetails, site]);
 
   const [value, setValue] = React.useState(0);
 

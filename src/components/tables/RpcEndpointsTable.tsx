@@ -1,17 +1,19 @@
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import ColoredIconCell from './ColoredIconCell';
-import { ColoredIconColumnType } from './utils';
 import { useServices } from '../../hooks/useServices';
 import { useAtom } from 'jotai';
 import { servicesLoadingAtom } from '../../atoms';
 import { useEffect, useState } from 'react';
 import BopmaticTableContainer from './BopmaticTableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
+import ApiHealthTableCell from '../healthTableCells/ApiHealthTableCell';
 
 type FormattedRpcEndpoint = {
   id: string;
   endpointStr: string;
+  envId: string | undefined;
+  projectId: string | undefined;
+  serviceName: string | undefined;
 };
 
 let rows: FormattedRpcEndpoint[];
@@ -37,12 +39,25 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 190,
     renderCell: (params) => {
-      return (
-        <ColoredIconCell
-          value="Healthy"
-          type={ColoredIconColumnType.PROJECT_HEALTH}
-        />
-      );
+      if (
+        params.row.projectId &&
+        params.row.envId &&
+        params.row.serviceName &&
+        params.row.endpointStr
+      ) {
+        const str = params.row.endpointStr;
+        const apiName = str.substring(str.lastIndexOf('/') + 1);
+        return (
+          <ApiHealthTableCell
+            projectId={params.row.projectId}
+            envId={params.row.envId}
+            serviceName={params.row.serviceName}
+            apiName={apiName}
+          />
+        );
+      } else {
+        return '';
+      }
     },
   },
   {
@@ -81,12 +96,15 @@ const RpcEndpointsTable: React.FC<RpcEndpointsTableProps> = ({
         const f: FormattedRpcEndpoint = {
           id: rpcEndpointValue,
           endpointStr: rpcEndpointValue,
+          envId,
+          projectId: projId,
+          serviceName,
         };
         return f;
       });
       setFormattedRpcEndpoints(formatted);
     }
-  }, [rpcEndpoints]);
+  }, [envId, projId, rpcEndpoints, serviceName]);
 
   return (
     <BopmaticTableContainer

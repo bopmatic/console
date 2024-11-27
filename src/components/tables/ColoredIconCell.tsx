@@ -8,6 +8,7 @@ import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DoNotDisturbOnOutlinedIcon from '@mui/icons-material/DoNotDisturbOnOutlined';
+import { ApiHealth } from '../../atoms';
 
 type ColoredIconCellProps = {
   value: string;
@@ -15,7 +16,7 @@ type ColoredIconCellProps = {
 };
 
 // return <CheckCircleOutlineIcon />;
-const getDeploymentStateIcon = (value: DeploymentState) => {
+export const getDeploymentStateIcon = (value: DeploymentState) => {
   switch (value) {
     case DeploymentState.Created:
       return <PendingOutlinedIcon />;
@@ -218,14 +219,59 @@ const getProjectStateText = (value: ProjectState) => {
   }
 };
 
-const getIcon = (value: string, type: ColoredIconColumnType) => {
+const getHealthIcon = (value: ApiHealth) => {
+  switch (value) {
+    case ApiHealth.HEALTHY:
+      return <CheckCircleOutlineIcon />;
+    case ApiHealth.DEGRADED:
+      return <ErrorOutlineOutlinedIcon />;
+    case ApiHealth.UNHEALTHY:
+      return <ErrorOutlineOutlinedIcon />;
+    case ApiHealth.UNKNOWN:
+      return <HelpOutlineOutlinedIcon />;
+    default:
+      return <HelpOutlineOutlinedIcon />;
+  }
+};
+
+const getHealthTextColor = (value: ApiHealth) => {
+  switch (value) {
+    case ApiHealth.HEALTHY:
+      return 'text-bopsuccess';
+    case ApiHealth.DEGRADED:
+      return 'text-boperror';
+    case ApiHealth.UNHEALTHY:
+      return 'text-boperror';
+    case ApiHealth.UNKNOWN:
+      return 'text-bopgreytext';
+    default:
+      return 'text-bopgreytext';
+  }
+};
+
+const getHealthText = (value: ApiHealth) => {
+  switch (value) {
+    case ApiHealth.HEALTHY:
+      return 'Healthy';
+    case ApiHealth.DEGRADED:
+      return 'Degraded';
+    case ApiHealth.UNHEALTHY:
+      return 'Unhealthy';
+    case ApiHealth.UNKNOWN:
+      return 'Unknown';
+    default:
+      return 'Unknown';
+  }
+};
+
+export const getIcon = (value: string, type: ColoredIconColumnType) => {
   switch (type) {
     case ColoredIconColumnType.DEPLOYMENT_STATE:
       return getDeploymentStateIcon(value as DeploymentState);
     case ColoredIconColumnType.PACKAGE_STATE:
       return getPackageStateIcon(value as PackageState);
     case ColoredIconColumnType.PROJECT_HEALTH:
-      return <CheckCircleOutlineIcon />;
+      return getHealthIcon(value as ApiHealth);
     case ColoredIconColumnType.PROJECT_STATE:
       return getProjectStateIcon(value as ProjectState);
     default:
@@ -233,14 +279,14 @@ const getIcon = (value: string, type: ColoredIconColumnType) => {
   }
 };
 
-const getTextColor = (value: string, type: ColoredIconColumnType) => {
+export const getTextColor = (value: string, type: ColoredIconColumnType) => {
   switch (type) {
     case ColoredIconColumnType.DEPLOYMENT_STATE:
       return getDeploymentStateTextColor(value as DeploymentState);
     case ColoredIconColumnType.PACKAGE_STATE:
       return getPackageStateTextColor(value as PackageState);
     case ColoredIconColumnType.PROJECT_HEALTH:
-      return 'text-bopsuccess';
+      return getHealthTextColor(value as ApiHealth);
     case ColoredIconColumnType.PROJECT_STATE:
       return getProjectStateTextColor(value as ProjectState);
     default:
@@ -248,14 +294,14 @@ const getTextColor = (value: string, type: ColoredIconColumnType) => {
   }
 };
 
-const getText = (value: string, type: ColoredIconColumnType) => {
+export const getText = (value: string, type: ColoredIconColumnType) => {
   switch (type) {
     case ColoredIconColumnType.DEPLOYMENT_STATE:
       return getDeploymentStateText(value as DeploymentState);
     case ColoredIconColumnType.PACKAGE_STATE:
       return getPackageStateText(value as PackageState);
     case ColoredIconColumnType.PROJECT_HEALTH:
-      return value;
+      return getHealthText(value as ApiHealth);
     case ColoredIconColumnType.PROJECT_STATE:
       return getProjectStateText(value as ProjectState);
     default:

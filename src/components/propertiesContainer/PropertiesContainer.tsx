@@ -4,6 +4,14 @@ import ColoredIconCell from '../tables/ColoredIconCell';
 import { ColoredIconColumnType } from '../tables/utils';
 import CircularProgress from '@mui/material/CircularProgress';
 import BopmaticLink from '../link/BopmaticLink';
+import ServiceHealthTableCell from '../healthTableCells/ServiceHealthTableCell';
+import ProjectHealthTableCell from '../healthTableCells/ProjectHealthTableCell';
+
+type HealthTableCellProps = {
+  envId: string | undefined;
+  projectId: string | undefined;
+  serviceName?: string | undefined;
+};
 
 export type KeyValuePair = {
   key: string;
@@ -11,6 +19,7 @@ export type KeyValuePair = {
   isColoredIcon?: boolean;
   coloredIconColumnType?: ColoredIconColumnType;
   linkTo?: string;
+  healthTableCellProps?: HealthTableCellProps;
 };
 
 type PropertiesContainerProps = {
@@ -59,9 +68,25 @@ const PropertiesContainer: React.FC<PropertiesContainerProps> = ({
             <Grid size={defaultGridElementSizeDef} key={keyValuePair.key}>
               <div>
                 <div className="text-bopgreydisabled">{keyValuePair.key}</div>
-                {keyValuePair.isColoredIcon &&
-                keyValuePair.coloredIconColumnType &&
-                keyValuePair.value ? (
+                {keyValuePair.healthTableCellProps &&
+                keyValuePair.healthTableCellProps.serviceName ? (
+                  <ServiceHealthTableCell
+                    projectId={
+                      keyValuePair.healthTableCellProps.projectId as string
+                    }
+                    serviceName={
+                      keyValuePair.healthTableCellProps.serviceName as string
+                    }
+                  />
+                ) : keyValuePair.healthTableCellProps ? (
+                  <ProjectHealthTableCell
+                    projectId={
+                      keyValuePair.healthTableCellProps.projectId as string
+                    }
+                  />
+                ) : keyValuePair.isColoredIcon &&
+                  keyValuePair.coloredIconColumnType &&
+                  keyValuePair.value ? (
                   <ColoredIconCell
                     value={keyValuePair.value}
                     type={keyValuePair.coloredIconColumnType}

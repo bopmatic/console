@@ -152,3 +152,21 @@ export const usernameWithPersistenceAtom = atom(
     }
   }
 );
+
+export enum ApiHealth {
+  HEALTHY = 'HEALTHY',
+  DEGRADED = 'DEGRADED',
+  UNHEALTHY = 'UNHEALTHY',
+  UNKNOWN = 'UNKNOWN',
+}
+
+// There will be one atom per api per service per project
+export interface ApiHealthWrapper {
+  envId: string | undefined;
+  projectId: string | undefined;
+  serviceName: string | undefined;
+  apiName: string | undefined;
+  health: ApiHealth;
+}
+
+export const apiHealthAtom = atom<ApiHealthWrapper[] | null>(null);

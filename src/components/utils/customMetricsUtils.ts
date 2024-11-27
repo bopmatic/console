@@ -414,7 +414,7 @@ export const calculateSamplingPeriod = (
 
   // Determine the sampling period based on the duration
   if (durationInHours <= 24) {
-    return 360; // 5 minutes
+    return 300; // 5 minutes
   } else if (durationInHours <= 48) {
     return 900; // 15 minutes
   } else if (durationInHours <= 92) {
