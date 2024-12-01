@@ -28,8 +28,17 @@ axiosInstance.interceptors.response.use(
     const config = error.config as AxiosRequestConfig & { retryCount?: number };
 
     // Retry logic for HTTP 429
-    // TODO: Remove the 'OR' section of this IF statement once we figure out the CORS exceptions that come back from API
-    if (error.response?.status === 429 || error.code === 'ERR_NETWORK') {
+    // NOTE: Also adding retry for 401 (Auth) because our DashboardLayout component refreshes the component but sometimes
+    // if a user refreshed the page after 20+ minutes of inactivity the API requests fire before Cognito comes back
+    // with the refresh token. In these cases, we can just retry after small delay. If the refreshToken is expired, the
+    // dashboard layout component will redirect users to login page. This avoids an interceptor that refreshes the token
+    // which could call AWS Cognito too many times for a page with many API calls.
+    // TODO: Remove the 'OR ERR_NETWORK' section of this IF statement once we figure out the CORS exceptions that come back from API
+    if (
+      error.response?.status === 429 ||
+      error.response?.status === 401 ||
+      error.code === 'ERR_NETWORK'
+    ) {
       const retryAfter =
         parseInt(error.response?.headers['retry-after'], 10) || 1; // Default retry after 1 second
       config.retryCount = (config.retryCount || 0) + 1;
