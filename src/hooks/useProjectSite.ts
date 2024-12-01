@@ -25,8 +25,7 @@ export const useProjectSite = (
           throw new Error('DescribeSite did not return siteEndpoint property.');
         }
       } catch (error) {
-        // TODO: Handle errors
-        console.log('error:', error);
+        console.log('Error calling DescribeSite:', error);
         setSite('');
       }
       setIsLoading(false);

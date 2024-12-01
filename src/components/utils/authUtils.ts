@@ -15,7 +15,6 @@ export const isTokenValid = (token: string | null): boolean => {
 
   try {
     const { exp } = jwtDecode<JwtPayload>(token);
-    // console.log('Current JWT expiration is: ', new Date(exp * 1000));
     const currentTime = Date.now() / 1000;
     return exp > currentTime;
   } catch (error) {

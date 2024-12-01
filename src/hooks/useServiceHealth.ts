@@ -50,7 +50,6 @@ export const useServiceHealth = (
           }
         }
       }
-      console.log('++++++ setting serviceApiWrappers:', serviceApiWrappers);
       setServiceApiWrappers(serviceApiWrappers);
     }
     /* eslint-disable react-hooks/exhaustive-deps */

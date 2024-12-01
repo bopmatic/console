@@ -209,8 +209,6 @@ export const convertToChartData = (
           datasetNameSet.add(_labelsKey as string);
         }
       });
-    } else {
-      console.log('metric name is not included in the array of metric names');
     }
   });
 
@@ -464,7 +462,6 @@ export const calculateApiSuccessRates = (metricsData: PromParsedFormat[]) => {
       });
     }
   });
-  console.log('metricsByApi:', metricsByApi);
 
   // Calculate success rate for each API
   Object.entries(metricsByApi).forEach(([api, data]) => {

@@ -122,7 +122,18 @@ export const useApiHealth = (
                     apiName: api,
                     health: evaluateHealthStatus(successRate),
                   };
-                  allWrappers.push(apiHealthWrapper);
+                  // first check if an existing API health item exists for this one
+                  const exists = !!allWrappers?.find(
+                    (ah) =>
+                      ah.envId === envId &&
+                      ah.projectId === projectId &&
+                      ah.serviceName ===
+                        associatedServiceApiWrapper.serviceName &&
+                      ah.apiName === associatedServiceApiWrapper.apiName
+                  );
+                  if (!exists) {
+                    allWrappers.push(apiHealthWrapper);
+                  }
                 }
               );
             } else {

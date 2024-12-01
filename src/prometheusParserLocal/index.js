@@ -69,9 +69,6 @@ export default function parsePrometheusTextFormat(metrics, datasetLabelKey) {
       lineMetric = lineSample.name;
     }
 
-    // console.log('@@@@@@@@@@@ new @@@@@@@@@@@@@');
-    // console.log('lineSample: ', lineSample);
-    // console.log('lineMetric: ', lineMetric);
     if (lineMetric === metric) {
       // metadata always has same name
       if (!help && lineHelp) {
@@ -94,13 +91,11 @@ export default function parsePrometheusTextFormat(metrics, datasetLabelKey) {
       allowedNames.push(suffixedBucket);
     }
 
-    // console.log('metric:', metric);
     // encountered new metric family or end of input
     if (
       i + 1 === lines.length ||
       (lineMetric && !allowedNames.includes(lineMetric))
     ) {
-      // console.log('NEW METRIC FAMILY OR END OF INPUT');
       // write current
       if (metric) {
         if (type === SUMMARY_TYPE) {
@@ -113,12 +108,6 @@ export default function parsePrometheusTextFormat(metrics, datasetLabelKey) {
         } else if (type === HISTOGRAM_TYPE) {
           samples = flattenMetrics(samples, 'buckets', 'le', 'bucket');
         }
-        // console.log("Pushing new metric into 'converted' array", {
-        //   name: metric,
-        //   help: help ? help : '',
-        //   type: type ? type : 'UNTYPED',
-        //   metrics: samples,
-        // });
         converted.push({
           name: metric,
           help: help ? help : '',
@@ -130,12 +119,7 @@ export default function parsePrometheusTextFormat(metrics, datasetLabelKey) {
       metric = lineMetric;
       help = lineHelp ? lineHelp : null;
       type = lineType ? lineType : null;
-      // console.log('!!!!!!     RESETTING SAMPLES ARRAY        !!!!!!');
       samples = [];
-    } else {
-      // console.log(
-      //   '---- not new metric family, skipping pushing new metric in ----'
-      // );
     }
     if (lineSample) {
       // key is not called value in official implementation if suffixed count, sum, or bucket

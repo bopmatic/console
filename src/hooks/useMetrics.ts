@@ -54,7 +54,6 @@ export const useMetrics = (
           req.metricNames = metricNames;
         }
         const getMetricsReply = await getBopmaticClient().getMetricSamples(req);
-        // console.log('getMetricsReply:', getMetricsReply);
         // check for errors
         // TODO: Make this generic and easier to do with client, maybe bake this into client
         const possibleError = JSON.parse(getMetricsReply.request.response);
@@ -72,18 +71,12 @@ export const useMetrics = (
           throw new Error('Something went wrong calling the API.');
         }
         if (getMetricsReply?.data?.metricBuf) {
-          // console.log(
-          //   'getMetricsReply?.data?.metricBuf:',
-          //   getMetricsReply?.data?.metricBuf
-          // );
-          // TODO: Remove the "#Average" from the end of lines if they exist
           const parsed0 = getMetricsReply?.data?.metricBuf.replace(
             / #Minimum/g,
             ''
           );
           const parsed1 = parsed0.replace(/ #Maximum/g, '');
           const parsed2 = parsed1.replace(/ #Average/g, '');
-          // console.log('pre parser:', parsed2);
           let parsed = parsePrometheusTextFormat(parsed2, 'api');
           if (
             metricNames[0] === 'Capacity' &&
@@ -100,7 +93,6 @@ export const useMetrics = (
             groupByMetricName,
             quantileVal
           );
-          // console.log('chartData:', chartData);
           // populate null data points to force ChartJs to respect the start and end time so data is relative to the window
           chartData = populateHourlyData(startTime, endTime, chartData);
           setErrorText(undefined); // make sure to empty out any errors that may have existed before

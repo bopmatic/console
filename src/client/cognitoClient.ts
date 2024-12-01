@@ -50,7 +50,6 @@ export async function changePassword(
 
   try {
     await client.send(command);
-    console.log('Password changed successfully!');
   } catch (error) {
     throw error;
   }
@@ -64,7 +63,6 @@ export async function initiateForgotPassword(username: string): Promise<void> {
 
   try {
     await client.send(command);
-    console.log('Verification code sent successfully.');
   } catch (error) {
     console.error('Error initiating forgot password:', error);
     throw new Error('Failed to send verification code. Please try again.');
