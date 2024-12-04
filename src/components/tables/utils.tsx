@@ -17,10 +17,11 @@ export enum ColoredIconColumnType {
   PROJECT_STATE = 'PROJECT_STATE',
 }
 
-export const formatCompletionTime = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+export const formatCompletionTime = (milliseconds: number): string => {
+  const totalSeconds = Math.floor(milliseconds / 1000); // Convert milliseconds to seconds
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
 
   const hoursPart = hours > 0 ? `${hours}h ` : '';
   const minutesPart = minutes > 0 ? `${minutes}m ` : '';
