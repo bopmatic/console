@@ -106,7 +106,7 @@ const Logs: React.FC = () => {
   const downloadLogsHandler = () => {
     if (!apiRef.current) return;
 
-    const fileName = `${projId}_${service}_${startTime?.unix()}_${endTime?.unix()}_logs.txt`;
+    const fileName = `${projId}_${service}_${startTime?.unix()}_${endTime?.unix()}_logs.json`;
     const visibleSortedFilteredRows = apiRef.current
       .getSortedRowIds()
       .map((id) => {
