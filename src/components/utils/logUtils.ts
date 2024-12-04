@@ -16,8 +16,8 @@ export const getLogs = async (
         "startTime or endTime error; they are null but we shouln't get here if so..."
       );
     }
-    const _startTime = Math.floor(startTime.valueOf() / 1000);
-    const _endTime = Math.floor(endTime.valueOf() / 1000);
+    const _startTime = Math.floor(startTime.valueOf());
+    const _endTime = Math.floor(endTime.valueOf());
     const req: GetLogsRequest = {
       projId: projectId,
       envId: envId,

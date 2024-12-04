@@ -92,7 +92,7 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
     }
     const req: CreateApiKeyRequest = {};
     if (!neverExpireChecked && expirationDate) {
-      req.expireTime = Math.floor(expirationDate.valueOf() / 1000).toString();
+      req.expireTime = Math.floor(expirationDate.valueOf()).toString();
     }
     if (name && name.length) {
       req.name = name;

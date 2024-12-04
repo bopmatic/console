@@ -45,7 +45,7 @@ const PackageDetails: React.FC = () => {
           key: 'Upload date',
           value: packageDescription.uploadTime
             ? bopmaticDateFormat(
-                new Date(parseInt(packageDescription.uploadTime) * 1000)
+                new Date(parseInt(packageDescription.uploadTime))
               )
             : '-',
         },

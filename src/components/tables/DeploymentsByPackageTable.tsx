@@ -98,7 +98,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.endTime) {
         return null;
       }
-      return new Date(parseInt(row.endTime) * 1000);
+      return new Date(parseInt(row.endTime));
     },
   },
   {

@@ -66,9 +66,7 @@ const ProjectDetails: React.FC = () => {
         {
           key: 'Creation date',
           value: projectDetails?.createTime
-            ? bopmaticDateFormat(
-                new Date(parseInt(projectDetails?.createTime) * 1000)
-              )
+            ? bopmaticDateFormat(new Date(parseInt(projectDetails?.createTime)))
             : undefined,
         },
         {

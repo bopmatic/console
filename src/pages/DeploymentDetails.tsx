@@ -57,7 +57,7 @@ const DeploymentDetails: React.FC = () => {
           key: 'Creation date',
           value: deploymentDescription.createTime
             ? bopmaticDateFormat(
-                new Date(parseInt(deploymentDescription.createTime) * 1000)
+                new Date(parseInt(deploymentDescription.createTime))
               )
             : '-',
         },
@@ -65,9 +65,7 @@ const DeploymentDetails: React.FC = () => {
           key: 'Validation date',
           value: deploymentDescription.validationStartTime
             ? bopmaticDateFormat(
-                new Date(
-                  parseInt(deploymentDescription.validationStartTime) * 1000
-                )
+                new Date(parseInt(deploymentDescription.validationStartTime))
               )
             : '-',
         },
@@ -75,7 +73,7 @@ const DeploymentDetails: React.FC = () => {
           key: 'Build start date',
           value: deploymentDescription.buildStartTime
             ? bopmaticDateFormat(
-                new Date(parseInt(deploymentDescription.buildStartTime) * 1000)
+                new Date(parseInt(deploymentDescription.buildStartTime))
               )
             : '-',
         },
@@ -83,7 +81,7 @@ const DeploymentDetails: React.FC = () => {
           key: 'Deploy start',
           value: deploymentDescription.deployStartTime
             ? bopmaticDateFormat(
-                new Date(parseInt(deploymentDescription.deployStartTime) * 1000)
+                new Date(parseInt(deploymentDescription.deployStartTime))
               )
             : '-',
         },

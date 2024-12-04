@@ -52,7 +52,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.createTime) {
         return null;
       }
-      return bopmaticDateFormat(new Date(parseInt(row.createTime) * 1000));
+      return bopmaticDateFormat(new Date(parseInt(row.createTime)));
     },
   },
 ];

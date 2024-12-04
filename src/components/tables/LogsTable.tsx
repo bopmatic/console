@@ -23,7 +23,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!row.timestamp) {
         return null;
       }
-      return new Date(parseInt(row.timestamp) * 1000).toISOString();
+      return new Date(parseInt(row.timestamp)).toISOString();
     },
   },
   {

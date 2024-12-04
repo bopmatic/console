@@ -33,8 +33,8 @@ export const useMetrics = (
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const _startTime = Math.floor(startTime.getTime() / 1000);
-        const _endTime = Math.floor(endTime.getTime() / 1000);
+        const _startTime = Math.floor(startTime.getTime());
+        const _endTime = Math.floor(endTime.getTime());
         const req: GetMetricSamplesRequest = {
           projId: projectId,
           envId: envId,

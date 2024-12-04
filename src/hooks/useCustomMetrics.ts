@@ -35,8 +35,8 @@ export const useCustomMetrics = (
       startTime &&
       endTime
     ) {
-      const _startTime = startTime.unix();
-      const _endTime = endTime.unix();
+      const _startTime = startTime.unix() * 1000;
+      const _endTime = endTime.unix() * 1000;
       for (let i = 0; i < allSelectedMetrics.length; i++) {
         const m = allSelectedMetrics[i];
         apiCalls.push(

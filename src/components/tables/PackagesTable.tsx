@@ -76,7 +76,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       if (!value) {
         return value;
       }
-      return new Date(parseInt(value) * 1000);
+      return new Date(parseInt(value));
     },
     valueFormatter: (value?: Date) => {
       if (value instanceof Date) {

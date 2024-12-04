@@ -49,8 +49,8 @@ export const useApiHealth = (
       const startTime = new Date();
       startTime.setHours(startTime.getHours() - PREVIOUS_X_HOURS);
       const endTime = new Date();
-      const _startTime = Math.floor(startTime.getTime() / 1000);
-      const _endTime = Math.floor(endTime.getTime() / 1000);
+      const _startTime = Math.floor(startTime.getTime());
+      const _endTime = Math.floor(endTime.getTime());
       for (let i = 0; i < serviceApiWrappers.length; i++) {
         const s = serviceApiWrappers[i];
         apiCalls.push(
