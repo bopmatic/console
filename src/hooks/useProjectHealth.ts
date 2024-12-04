@@ -18,7 +18,12 @@ export const useProjectHealth = (
     serviceNames
   );
   useEffect(() => {
-    if (apiHealthArr && apiHealthArr.length) {
+    if (serviceNames && serviceNames.length === 0) {
+      // This is a project that doesn't have services, such as static site.
+      // In this case, we want to just hard-code this to Healthy. Later, we can
+      // look into CloudFront logs or other mechanisms based on the type of project.
+      setProjectHealth(ApiHealth.HEALTHY);
+    } else if (apiHealthArr && apiHealthArr.length) {
       setProjectHealth(evaluateOverallHealth(apiHealthArr));
     }
     /* eslint-disable react-hooks/exhaustive-deps */
