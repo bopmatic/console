@@ -48,19 +48,19 @@ export interface ApiKeyDescription {
      */
     'description'?: string;
     /**
-     * time the key was created expressed as the number of seconds since Jan 1, 1970 00:00:00 UTC.
+     * time the key was created expressed as the number of milliseconds since Jan 1, 1970 00:00:00 UTC.
      * @type {string}
      * @memberof ApiKeyDescription
      */
     'createTime'?: string;
     /**
-     * time the key should expire expressed as the number of seconds since Jan 1, 1970 00:00:00 UTC. A value of 0 indicates the key should never expire.
+     * time the key should expire expressed as the number of milliseconds since Jan 1, 1970 00:00:00 UTC. A value of 0 indicates the key should never expire.
      * @type {string}
      * @memberof ApiKeyDescription
      */
     'expireTime'?: string;
     /**
-     * time the key was last uzed expressed as the number of seconds since Jan 1, 1970 00:00:00 UTC. A value of 0 indicates the key was never used.
+     * time the key was last uzed expressed as the number of milliseconds since Jan 1, 1970 00:00:00 UTC. A value of 0 indicates the key was never used.
      * @type {string}
      * @memberof ApiKeyDescription
      */
@@ -110,7 +110,7 @@ export interface CreateApiKeyRequest {
      */
     'description'?: string;
     /**
-     * time the key should expire expressed as the number of seconds since Jan 1, 1970 00:00:00 UTC. A value of 0 indicates the key should never expire.
+     * time the key should expire expressed as the number of milliseconds since Jan 1, 1970 00:00:00 UTC. A value of 0 indicates the key should never expire.
      * @type {string}
      * @memberof CreateApiKeyRequest
      */

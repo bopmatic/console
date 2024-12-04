@@ -77,6 +77,26 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
       return ''; // Fallback if value is not a valid Date
     },
   },
+  {
+    field: 'lastUsed',
+    headerName: 'Last used',
+    type: 'dateTime',
+    flex: 1,
+    headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
+    valueGetter: (value) => {
+      if (!value) {
+        return value;
+      }
+      return new Date(parseInt(value));
+    },
+    valueFormatter: (value?: Date) => {
+      if (value instanceof Date) {
+        return bopmaticDateFormat_Grids(value);
+      }
+      return ''; // Fallback if value is not a valid Date
+    },
+  },
 ];
 
 const getRowId = (row: ApiKeyDescription) => {
