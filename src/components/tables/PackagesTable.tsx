@@ -128,7 +128,7 @@ const PackagesTable: React.FC<PackagesTableProps> = ({ projId }) => {
               },
             },
             sorting: {
-              sortModel: [{ field: 'id', sort: 'asc' }],
+              sortModel: [{ field: 'uploadTime', sort: 'desc' }],
             },
           }}
           pageSizeOptions={[5]}

@@ -163,7 +163,7 @@ const DeploymentsByPackageTable: React.FC<DeploymentsByPackageTableProps> = ({
               },
             },
             sorting: {
-              sortModel: [{ field: 'id', sort: 'asc' }],
+              sortModel: [{ field: 'completionTime', sort: 'desc' }],
             },
           }}
           pageSizeOptions={[5]}
