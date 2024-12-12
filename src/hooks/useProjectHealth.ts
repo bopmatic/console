@@ -12,6 +12,7 @@ export const useProjectHealth = (
     undefined
   );
   const serviceNames = useServiceNames(projectId, envId);
+  const [isStaticProject, setIsStaticProject] = useState(false);
   const [apiHealthArr, isLoading] = useServiceHealth(
     envId,
     projectId,
@@ -22,11 +23,13 @@ export const useProjectHealth = (
       // This is a project that doesn't have services, such as static site.
       // In this case, we want to just hard-code this to Healthy. Later, we can
       // look into CloudFront logs or other mechanisms based on the type of project.
-      setProjectHealth(ApiHealth.HEALTHY);
+      setIsStaticProject(true);
     } else if (apiHealthArr && apiHealthArr.length) {
       setProjectHealth(evaluateOverallHealth(apiHealthArr));
     }
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [apiHealthArr]);
-  return [projectHealth, isLoading];
+  return isStaticProject
+    ? [ApiHealth.HEALTHY, false]
+    : [projectHealth, isLoading];
 };
