@@ -17,6 +17,7 @@ import EmptyTable from './EmptyTable';
 import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
 import { Tooltip } from '@mui/material';
 
+const DEPLOYING = 'DEPLOYING';
 let rows: DeploymentDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
   {
@@ -133,7 +134,13 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     headerClassName: 'bopmatic-table-column-header',
     minWidth: 175,
     valueGetter: (value, row) => {
-      if (!row.endTime) {
+      if (
+        row.state === 'DEPLOYING' ||
+        row.state === 'DPLY_BUILDING' ||
+        row.state === 'DPLY_VALIDATING'
+      ) {
+        return DEPLOYING;
+      } else if (!row.endTime) {
         return null;
       }
       return new Date(parseInt(row.endTime));
@@ -141,6 +148,8 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     valueFormatter: (value?: Date) => {
       if (value instanceof Date) {
         return bopmaticDateFormat_Grids(value);
+      } else if (value === DEPLOYING) {
+        return 'Pending...';
       }
       return ''; // Fallback if value is not a valid Date
     },
