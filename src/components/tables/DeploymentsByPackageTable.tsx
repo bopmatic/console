@@ -14,6 +14,7 @@ import { useAtom } from 'jotai';
 import { deploymentsLoadingAtom } from '../../atoms';
 import BopmaticTableContainer from './BopmaticTableContainer';
 import { useEnvironment } from '../../hooks/useEnvironment';
+import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
 
 let rows: DeploymentDescription[];
 const columns: GridColDef<(typeof rows)[number]>[] = [
@@ -85,6 +86,26 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
         return null;
       }
       return parseDeployTypeInitiatorStateDetail(row.header?.type);
+    },
+  },
+  {
+    field: 'createTime',
+    headerName: 'Creation date',
+    type: 'dateTime',
+    flex: 2,
+    headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
+    valueGetter: (value, row) => {
+      if (!row.createTime) {
+        return null;
+      }
+      return new Date(parseInt(row.createTime));
+    },
+    valueFormatter: (value?: Date) => {
+      if (value instanceof Date) {
+        return bopmaticDateFormat_Grids(value);
+      }
+      return ''; // Fallback if value is not a valid Date
     },
   },
   {
@@ -163,7 +184,7 @@ const DeploymentsByPackageTable: React.FC<DeploymentsByPackageTableProps> = ({
               },
             },
             sorting: {
-              sortModel: [{ field: 'completionTime', sort: 'desc' }],
+              sortModel: [{ field: 'createTime', sort: 'desc' }],
             },
           }}
           pageSizeOptions={[5]}

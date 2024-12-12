@@ -36,28 +36,6 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
     },
   },
   {
-    field: 'packageId',
-    headerName: 'Package ID',
-    flex: 1,
-    headerClassName: 'bopmatic-table-column-header',
-    minWidth: 175,
-    renderCell: (params) => {
-      return (
-        <BopmaticLink
-          to={`/projects/${params.row.header?.projId}/packages/${params.value}`}
-        >
-          {params.value}
-        </BopmaticLink>
-      );
-    },
-    valueGetter: (value, row) => {
-      if (!row.header?.pkgId) {
-        return null;
-      }
-      return row.header?.pkgId;
-    },
-  },
-  {
     field: 'state',
     headerName: 'Deployment state',
     flex: 1,
@@ -125,6 +103,26 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
         return '-';
       }
       return row.header?.reason;
+    },
+  },
+  {
+    field: 'createTime',
+    headerName: 'Creation date',
+    type: 'dateTime',
+    flex: 2,
+    headerClassName: 'bopmatic-table-column-header',
+    minWidth: 175,
+    valueGetter: (value, row) => {
+      if (!row.createTime) {
+        return null;
+      }
+      return new Date(parseInt(row.createTime));
+    },
+    valueFormatter: (value?: Date) => {
+      if (value instanceof Date) {
+        return bopmaticDateFormat_Grids(value);
+      }
+      return ''; // Fallback if value is not a valid Date
     },
   },
   {
@@ -209,7 +207,7 @@ const DeploymentsTable: React.FC<DeploymentsTableProps> = ({
               },
             },
             sorting: {
-              sortModel: [{ field: 'completionTime', sort: 'desc' }],
+              sortModel: [{ field: 'createTime', sort: 'desc' }],
             },
           }}
           pageSizeOptions={[5]}
