@@ -26,6 +26,8 @@ import { useProjects } from '../../hooks/useProjects';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEnvironments } from '../../hooks/useEnvironments';
 import { useApiKeys } from '../../hooks/useApiKeys';
+import { useAtom } from 'jotai/index';
+import { projectsLoadingAtom } from '../../atoms';
 
 const drawerWidth = 240;
 
@@ -62,6 +64,7 @@ const LeftNav = () => {
   const [projectsOpen, setProjectsOpen] = React.useState(true);
   const location = useLocation();
   const projects = useProjects();
+  const [projectsLoadingData] = useAtom(projectsLoadingAtom);
   const environments = useEnvironments();
   const [apiKeys] = useApiKeys();
 
@@ -177,7 +180,15 @@ const LeftNav = () => {
           </div>
           <Collapse in={projectsOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              {projects ? (
+              {projectsLoadingData ? (
+                <ListItemButton sx={{ pl: 8 }}>
+                  <ListItemIcon>
+                    <div className="flex justify-center">
+                      <CircularProgress color="primary" size="2rem" />
+                    </div>
+                  </ListItemIcon>
+                </ListItemButton>
+              ) : projects && projects.length ? (
                 projects?.map((projectDesc, index) => {
                   return (
                     <CustomListItemButton
@@ -193,13 +204,7 @@ const LeftNav = () => {
                   );
                 })
               ) : (
-                <ListItemButton sx={{ pl: 8 }}>
-                  <ListItemIcon>
-                    <div className="flex justify-center">
-                      <CircularProgress color="primary" size="2rem" />
-                    </div>
-                  </ListItemIcon>
-                </ListItemButton>
+                <></>
               )}
             </List>
           </Collapse>

@@ -6,7 +6,6 @@ import { ProjectDescription } from '../client';
 
 export const useProjects = () => {
   const [projectsData] = useAtom(projectsAtom); // Use the atom to read and update data
-  const [projectsLoadingData] = useAtom(projectsLoadingAtom);
   const setProjectAtomData = useSetAtom(projectsAtom); // Another way to set data
   const setProjectLoadingAtom = useSetAtom(projectsLoadingAtom);
 
@@ -33,26 +32,21 @@ export const useProjects = () => {
             }
           }
           setProjectAtomData(projects);
-          setProjectLoadingAtom(false);
         }
+        setProjectLoadingAtom(false);
       } catch (error) {
         console.error('Failed to fetch data', error);
         setProjectLoadingAtom(false);
       }
     };
 
-    // TODO: This isn't working; its calling ListProjects twice because of LeftNav and ProjectsTable using the hook; figure out why
     if (!projectsData) {
       // Only fetch if the data isn't already loaded
       setProjectLoadingAtom(true);
       fetchData();
     }
-  }, [
-    setProjectAtomData,
-    projectsData,
-    projectsLoadingData,
-    setProjectLoadingAtom,
-  ]); // Re-run if `setAtomData` changes or if `apiData` is null
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [setProjectAtomData, projectsData]); // Re-run if `setAtomData` changes or if `apiData` is null
 
   return projectsData;
 };

@@ -9,6 +9,10 @@ import { ProjectDescription } from '../../client';
 import BopmaticTableContainer from './BopmaticTableContainer';
 import { bopmaticDateFormat_Grids } from '../utils/dateUtils';
 import ProjectHealthTableCell from '../healthTableCells/ProjectHealthTableCell';
+import { useAtom } from 'jotai/index';
+import { projectsLoadingAtom } from '../../atoms';
+import CircularProgress from '@mui/material/CircularProgress';
+import EmptyTable from './EmptyTable';
 
 let rows: ProjectDescription[];
 
@@ -119,6 +123,7 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
 
 const ProjectsTable: React.FC = () => {
   const projectsData = useProjects();
+  const [projectsLoadingData] = useAtom(projectsLoadingAtom);
 
   return (
     <BopmaticTableContainer
@@ -127,30 +132,46 @@ const ProjectsTable: React.FC = () => {
       numResources={projectsData?.length}
     >
       <Box sx={{ height: 400, width: '100%' }}>
-        <DataGrid
-          rows={projectsData ?? []}
-          loading={!projectsData}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
+        {projectsLoadingData ? (
+          <div className="flex justify-center">
+            <CircularProgress />
+          </div>
+        ) : !projectsData || !projectsData.length ? (
+          <div className="flex justify-center">
+            <div className="pt-8 pb-8">
+              <div className="text-center text-bopblack text-xl">{`No projects`}</div>
+              <div className="text-center text-bopgreytext text-sm mt-4">
+                {`Use the Bopmatic CLI to create and deploy your projects.`}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <DataGrid
+            rows={projectsData ?? []}
+            loading={projectsLoadingData}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                },
               },
-            },
-            sorting: {
-              sortModel: [{ field: 'name', sort: 'asc' }],
-            },
-          }}
-          pageSizeOptions={[5]}
-          disableRowSelectionOnClick
-          sx={{
-            border: 'none',
-            '.MuiDataGrid-footerContainer': { borderTop: 'none' },
-            '& .MuiDataGrid-columnHeaders': {
-              borderBottom: '1px solid var(--divider, rgba(230, 233, 244, 1))',
-            },
-          }}
-        />
+              sorting: {
+                sortModel: [{ field: 'name', sort: 'asc' }],
+              },
+            }}
+            pageSizeOptions={[5]}
+            disableRowSelectionOnClick
+            sx={{
+              border: 'none',
+              '.MuiDataGrid-footerContainer': { borderTop: 'none' },
+              '& .MuiDataGrid-columnHeaders': {
+                borderBottom:
+                  '1px solid var(--divider, rgba(230, 233, 244, 1))',
+              },
+            }}
+          />
+        )}
       </Box>
     </BopmaticTableContainer>
   );
