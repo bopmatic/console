@@ -53,7 +53,7 @@ const PackageDetails: React.FC = () => {
       setPackageProperties(props);
     }
     /* eslint-disable react-hooks/exhaustive-deps */
-  }, []);
+  }, [packageDescription]);
 
   return (
     <div>
