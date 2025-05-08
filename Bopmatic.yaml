@@ -1,7 +1,7 @@
 formatversion: "1.1"
 project:
   name: "console"
-  id: "proj-b6b21c166d200d6b"
+  id: "proj-13845806466eb12c"
   desc: "Bopmatic ServiceRunner™ Console"
   sitedir: "build"
   buildcmd: "make"

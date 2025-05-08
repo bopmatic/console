@@ -8,7 +8,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 
 const REGION = 'us-east-2';
-const USER_POOL_CLIENT_ID = '79qsr4af7jrrsm8f6lfi12aqlv';
+const USER_POOL_CLIENT_ID = '3lif6p1jpede05fd6feumimu3v';
 
 const client = new CognitoIdentityProviderClient({ region: REGION });
 
